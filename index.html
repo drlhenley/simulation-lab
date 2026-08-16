@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dr. Henley Simulation Lab</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%234f46e5'/><text x='50' y='71' font-size='62' text-anchor='middle' fill='white' font-family='monospace'>&gt;_</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --canvas:#f6f7f9; --surface:#ffffff; --surface-2:#fbfbfd;
+  --ink:#0f172a; --ink-2:#334155; --muted:#64748b; --faint:#94a3b8;
+  --line:#e8eaef; --line-2:#d3d8e0;
+  --side:#101524; --side-2:#1a2032; --side-ink:#aeb6c8; --side-ink-2:#6b7488; --side-line:#222a3d;
+  --brand:#4f46e5; --brand-2:#4338ca; --brand-soft:#eef0ff; --brand-ink:#3730a3;
+  --ok:#16a34a; --ok-soft:#e9f7ee; --warn:#d97706; --warn-soft:#fdf3e3; --bad:#dc2626; --bad-soft:#fdecec;
+  --font-body:"Plus Jakarta Sans",system-ui,-apple-system,sans-serif;
+  --font-head:"Space Grotesk",system-ui,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,monospace;
+  --r-sm:8px; --r:12px; --r-lg:16px; --r-xl:22px;
+  --sh-1:0 1px 2px rgba(15,23,42,.06); --sh-2:0 4px 14px rgba(15,23,42,.08); --sh-3:0 12px 32px rgba(15,23,42,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--font-body);background:var(--canvas);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4,.head{font-family:var(--font-head);letter-spacing:-.015em}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+a{color:var(--brand);text-decoration:none}
+.mono{font-family:var(--font-mono)}
+.hidden{display:none!important}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:600;font-size:14px;padding:9px 15px;border-radius:var(--r-sm);transition:.15s ease;white-space:nowrap}
+.btn-primary{background:var(--brand);color:#fff;box-shadow:var(--sh-1)}
+.btn-primary:hover{background:var(--brand-2)}
+.btn-ghost{color:var(--ink-2)}
+.btn-ghost:hover{background:var(--canvas)}
+.btn-outline{border:1px solid var(--line-2);background:var(--surface);color:var(--ink)}
+.btn-outline:hover{border-color:var(--brand);color:var(--brand)}
+.btn-lg{padding:12px 22px;font-size:15px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* ===== APP SHELL: sidebar + main ===== */
+.app-shell{display:flex;min-height:100vh}
+.sidebar{width:256px;flex:none;background:var(--side);color:var(--side-ink);position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:22px 16px}
+.side-brand{display:flex;align-items:center;gap:11px;padding:6px 8px 22px;border-bottom:1px solid var(--side-line);margin-bottom:14px}
+.side-brand .mark{width:38px;height:38px;border-radius:11px;background:linear-gradient(150deg,var(--brand),#7c75f0);display:flex;align-items:center;justify-content:center;color:#fff;font-family:var(--font-mono);font-weight:600;font-size:16px;flex:none}
+.side-brand .nm{font-family:var(--font-head);font-weight:600;font-size:14.5px;color:#fff;line-height:1.25}
+.side-brand .nm small{display:block;font-family:var(--font-body);font-weight:500;font-size:11px;color:var(--side-ink-2);letter-spacing:.01em;margin-top:2px}
+.side-label{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--side-ink-2);padding:14px 10px 6px}
+.side-nav{display:flex;flex-direction:column;gap:2px}
+.side-link{display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:9px;font-weight:600;font-size:14px;color:var(--side-ink);transition:.13s ease;text-align:left;width:100%}
+.side-link:hover{background:var(--side-2);color:#fff}
+.side-link .gi{width:18px;height:18px;flex:none;opacity:.85}
+.side-foot{margin-top:auto;padding:14px 10px 4px;border-top:1px solid var(--side-line);font-size:12px;color:var(--side-ink-2);line-height:1.5}
+
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{position:sticky;top:0;z-index:20;background:rgba(246,247,249,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.topbar .crumb{font-size:13px;color:var(--muted);font-weight:600}
+.topbar .crumb b{color:var(--ink);font-weight:700}
+.topbar .tb-actions{display:flex;align-items:center;gap:10px}
+
+.page{padding:30px 32px 60px;max-width:1180px;width:100%}
+
+/* ===== overview hero ===== */
+.overview{display:grid;grid-template-columns:1.4fr 1fr;gap:22px;margin-bottom:34px}
+.hero-panel{background:linear-gradient(155deg,#161c2e 0%,#1d2540 60%,#272f54 100%);color:#fff;border-radius:var(--r-xl);padding:34px 32px;position:relative;overflow:hidden}
+.hero-panel::after{content:"";position:absolute;right:-60px;top:-60px;width:240px;height:240px;background:radial-gradient(circle,rgba(99,91,255,.55),transparent 70%);pointer-events:none}
+.hero-panel .tagline{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:600;letter-spacing:.02em;color:#c7c2ff;background:rgba(99,91,255,.16);border:1px solid rgba(124,117,240,.35);padding:5px 12px;border-radius:99px;margin-bottom:18px}
+.hero-panel h1{font-size:clamp(26px,3.2vw,38px);font-weight:700;line-height:1.08;margin-bottom:14px;position:relative}
+.hero-panel p{color:#c2c8da;font-size:15.5px;max-width:46ch;margin-bottom:24px;position:relative}
+.hero-panel .cta{display:flex;gap:10px;flex-wrap:wrap;position:relative}
+.hero-panel .btn-primary{background:#fff;color:var(--ink)}
+.hero-panel .btn-primary:hover{background:#e9e9f7}
+.hero-panel .btn-line{border:1px solid rgba(255,255,255,.28);color:#fff}
+.hero-panel .btn-line:hover{background:rgba(255,255,255,.1)}
+
+.stat-stack{display:flex;flex-direction:column;gap:14px}
+.stat-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px 20px;display:flex;align-items:center;gap:16px;box-shadow:var(--sh-1)}
+.stat-card .big{font-family:var(--font-head);font-size:30px;font-weight:700;color:var(--brand);line-height:1;min-width:46px}
+.stat-card .meta{font-size:13.5px;color:var(--muted);font-weight:500}
+.stat-card .meta b{display:block;color:var(--ink);font-size:14.5px;font-weight:700;font-family:var(--font-head)}
+
+/* ===== section ===== */
+.sec{margin-bottom:38px}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:14px;margin-bottom:16px}
+.sec-head h2{font-size:20px;font-weight:700}
+.sec-head .hint{font-size:13.5px;color:var(--muted)}
+
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px}
+.step .n{width:30px;height:30px;border-radius:9px;background:var(--brand-soft);color:var(--brand-ink);font-family:var(--font-head);font-weight:700;display:flex;align-items:center;justify-content:center;font-size:15px;margin-bottom:13px}
+.step h3{font-size:15.5px;font-weight:700;margin-bottom:6px}
+.step p{font-size:14px;color:var(--ink-2)}
+.instr-intro{font-size:14.5px;color:var(--ink-2);max-width:82ch;margin-bottom:18px;line-height:1.6}
+.instr-tips{margin-bottom:18px}
+.instr-foot{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px 20px;display:flex;flex-wrap:wrap;align-items:center;gap:16px;justify-content:space-between}
+.instr-foot p{font-size:13.5px;color:var(--ink-2);max-width:72ch;margin:0}
+
+/* ===== sim cards (flat, minimal, no top band) ===== */
+.sim-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+.sim-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);display:flex;flex-direction:column;transition:.16s ease;box-shadow:var(--sh-1)}
+.sim-card:hover{border-color:var(--line-2);box-shadow:var(--sh-2);transform:translateY(-2px)}
+.sim-card .band{display:none}
+.sim-card .body{padding:18px 18px 14px;display:flex;flex-direction:column;gap:9px;flex:1}
+.sim-card .toprow{display:flex;align-items:center;justify-content:space-between}
+.sim-card .ic{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:21px;background:var(--accent-soft,#eef0ff);border:1px solid color-mix(in srgb,var(--accent,#4f46e5) 18%,transparent)}
+.sim-card .code{font-family:var(--font-mono);font-size:11.5px;font-weight:600;letter-spacing:.02em;color:var(--accent,#4f46e5);background:var(--accent-soft,#eef0ff);padding:4px 8px;border-radius:6px}
+.sim-card .role{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--faint)}
+.sim-card h3{font-family:var(--font-head);font-size:16.5px;font-weight:600;line-height:1.25;letter-spacing:-.01em}
+.sim-card .desc{font-size:13.5px;color:var(--ink-2);flex:1}
+.sim-card .tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:11px;font-weight:600;padding:3px 9px;border-radius:6px;background:var(--canvas);color:var(--muted);border:1px solid var(--line)}
+.sim-card .foot{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-top:1px solid var(--line)}
+.playable-badge{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;color:var(--ok)}
+.playable-badge::before{content:"";width:7px;height:7px;border-radius:99px;background:var(--ok)}
+.sim-card .foot .btn-primary{padding:7px 14px;font-size:13px}
+
+/* ===== instructor / join panel ===== */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px;box-shadow:var(--sh-1)}
+.panel-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.panel h3{font-size:16px;font-weight:700;margin-bottom:6px}
+.panel p{font-size:13.5px;color:var(--ink-2);margin-bottom:14px}
+
+.footnote{font-size:12px;color:var(--faint);margin-top:30px;line-height:1.6;max-width:80ch}
+
+/* ===================== GAME VIEW ===================== */
+#game-view{min-height:100vh;background:var(--canvas)}
+.wrap{max-width:1100px;margin:0 auto;padding:0 24px}
+.game-top{position:sticky;top:0;z-index:30;background:rgba(246,247,249,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.game-top-inner{display:flex;align-items:center;justify-content:space-between;height:58px}
+.game-top .left{display:flex;align-items:center;gap:14px}
+.game-top .role-pill{display:flex;align-items:center;gap:10px;font-weight:600;font-size:14.5px;font-family:var(--font-head)}
+.game-top .role-pill .ic{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;background:var(--accent-soft,#eef0ff);border:1px solid color-mix(in srgb,var(--accent,#4f46e5) 18%,transparent)}
+.game-top .turn-count{font-size:12.5px;color:var(--muted);font-weight:600;font-family:var(--font-mono)}
+.gt-right{display:flex;align-items:center;gap:14px}
+.ref-btn{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--accent,var(--brand));background:var(--accent-soft,#eef0ff);border:1px solid color-mix(in srgb,var(--accent,#4f46e5) 22%,transparent);padding:6px 11px;border-radius:8px;transition:.13s ease}
+.ref-btn:hover{filter:brightness(.97);box-shadow:var(--sh-1)}
+.modal-wide{max-width:680px;max-height:84vh;display:flex;flex-direction:column;padding:0}
+.ref-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--surface);border-radius:var(--r-lg) var(--r-lg) 0 0}
+.ref-head h3{font-size:17px;margin:0}
+.ref-close{font-size:13px;font-weight:600;color:var(--muted);padding:6px 10px;border-radius:7px}
+.ref-close:hover{background:var(--canvas)}
+.ref-body{overflow-y:auto;padding:8px 22px 22px}
+.ref-sec{padding:16px 0;border-bottom:1px solid var(--line)}
+.ref-sec:last-child{border-bottom:none}
+.ref-sec h4{font-family:var(--font-head);font-size:15px;font-weight:600;margin-bottom:8px;color:var(--ink)}
+.ref-sec p{font-size:14px;color:var(--ink-2);margin-bottom:9px}
+.ref-terms{margin:4px 0}
+.ref-terms dt{font-weight:700;font-size:13.5px;color:var(--ink)}
+.ref-terms dd{font-size:13.5px;color:var(--ink-2);margin:0 0 10px 0;padding-left:0}
+.ref-list{margin:4px 0 4px 18px;font-size:13.5px;color:var(--ink-2)}
+.ref-list li{margin-bottom:5px}
+.ref-tablewrap{overflow-x:auto;margin:6px 0}
+.ref-table{width:100%;border-collapse:collapse;font-size:13px}
+.ref-table th{text-align:left;background:var(--canvas);color:var(--ink-2);font-weight:700;padding:7px 10px;border:1px solid var(--line)}
+.ref-table td{padding:7px 10px;border:1px solid var(--line);color:var(--ink-2);vertical-align:top}
+.ref-quote{border-left:3px solid var(--accent,var(--brand));background:var(--surface-2);padding:9px 13px;margin:8px 0;font-size:13.5px;color:var(--ink-2);border-radius:0 8px 8px 0;font-style:italic}
+.exit-btn{font-size:13px;font-weight:600;color:var(--ink-2);padding:7px 12px;border-radius:8px}
+.exit-btn:hover{background:var(--surface)}
+
+.meters{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:16px 0}
+.meter{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:13px 15px;box-shadow:var(--sh-1)}
+.meter .ml{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-bottom:10px;gap:8px}
+.meter .mstat{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:0;text-transform:none;padding:2px 8px;border-radius:6px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.seg-track{display:flex;gap:3px}
+.seg{flex:1;height:9px;border-radius:3px;background:var(--line);transition:background .4s ease}
+.seg.on{box-shadow:inset 0 0 0 0.5px rgba(0,0,0,.04)}
+/* legacy continuous bar (unused, kept for safety) */
+.bar{height:6px;border-radius:99px;background:var(--canvas);overflow:hidden;border:1px solid var(--line)}
+.bar > span{display:block;height:100%;border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+
+.game-main{max-width:740px;margin:0 auto;padding:12px 24px 60px}
+/* decision stepper */
+.prog{margin:10px 0 22px}
+.prog-steps{display:flex;gap:6px;align-items:center}
+.pstep{flex:1;height:6px;border-radius:99px;background:var(--line-2);position:relative;transition:.3s ease}
+.pstep.done{background:var(--brand)}
+.pstep.current{height:10px;border-radius:99px;background:linear-gradient(90deg,var(--brand),#7c75f0);box-shadow:0 0 0 3px var(--brand-soft)}
+.pstep.refl::after{content:"";position:absolute;right:-5px;top:50%;width:7px;height:7px;background:var(--warn);border:1.5px solid var(--canvas);border-radius:2px;transform:translateY(-50%) rotate(45deg);z-index:1}
+.prog-cap{display:flex;justify-content:space-between;align-items:center;margin-top:11px;font-family:var(--font-mono);font-size:10.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--faint)}
+.prog-cap .rf{display:inline-flex;align-items:center;gap:6px;color:var(--warn)}
+.prog-cap .rf::before{content:"";width:7px;height:7px;background:var(--warn);border-radius:2px;transform:rotate(45deg)}
+/* legacy track (unused) */
+.progress-track{display:flex;gap:5px;margin:8px 0 22px}
+.progress-track .pip{flex:1;height:4px;border-radius:99px;background:var(--line-2)}
+.progress-track .pip.done{background:var(--accent,var(--brand))}
+
+.scene-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--sh-2);overflow:hidden}
+.scene-head{padding:22px 26px 0}
+.scene-tagrow{display:flex;align-items:center;gap:9px;margin-bottom:13px;flex-wrap:wrap}
+.scene-kicker{font-family:var(--font-mono);font-size:11.5px;font-weight:600;letter-spacing:.02em;color:var(--accent,var(--brand));text-transform:uppercase}
+.scene-context-tag{font-size:11px;font-weight:600;background:var(--canvas);color:var(--muted);padding:3px 9px;border-radius:6px;border:1px solid var(--line)}
+.scene-card h2{font-family:var(--font-head);font-size:22px;font-weight:600;line-height:1.25;letter-spacing:-.01em;padding:0 26px}
+.scene-body{padding:14px 26px 4px;font-size:15.5px;color:var(--ink-2)}
+.scene-body p{margin-bottom:12px}
+.choices{padding:8px 26px 26px;display:flex;flex-direction:column;gap:9px}
+.choice{text-align:left;border:1px solid var(--line-2);border-radius:var(--r);padding:14px 16px;font-size:15px;font-weight:500;transition:.13s ease;background:var(--surface);display:flex;gap:12px;align-items:flex-start;color:var(--ink)}
+.choice:hover{border-color:var(--accent,var(--brand));background:var(--surface-2);box-shadow:var(--sh-1)}
+.choice .key{flex:none;width:24px;height:24px;border-radius:6px;background:var(--canvas);border:1px solid var(--line);font-family:var(--font-mono);font-weight:600;font-size:12px;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.choice:hover .key{background:var(--accent,var(--brand));color:#fff;border-color:transparent}
+
+.consequence{padding:0 26px 26px}
+.cq-box{border-radius:var(--r);padding:17px 19px;background:var(--surface-2);border:1px solid var(--line);border-left:3px solid var(--accent,var(--brand))}
+.cq-box .lbl{font-family:var(--font-mono);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-bottom:7px}
+.cq-box p{font-size:15px;color:var(--ink)}
+.deltas{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+.delta{font-size:12px;font-weight:700;font-family:var(--font-mono);padding:4px 9px;border-radius:6px;display:flex;gap:5px;align-items:center}
+.delta.up{background:var(--ok-soft);color:#0f7a40}
+.delta.down{background:var(--bad-soft);color:#b91c1c}
+.delta.flat{background:var(--canvas);color:var(--muted)}
+.comp-earned{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.comp-earned .c{font-size:11.5px;font-weight:600;padding:4px 9px;border-radius:6px;background:var(--brand-soft);color:var(--brand-ink)}
+
+.reflect-card{background:#fffdfa;border-color:#f2e4cb}
+.reflect-card .scene-kicker{color:var(--warn)}
+.reflect-card .cq-box{border-left-color:var(--warn)}
+.reflect-prompt{font-family:var(--font-head);font-size:19px;font-weight:600;line-height:1.35;padding:6px 26px 0;color:var(--ink)}
+textarea.reflect-input{width:calc(100% - 52px);margin:14px 26px;min-height:108px;padding:13px;border:1px solid var(--line-2);border-radius:var(--r);font-family:inherit;font-size:14.5px;resize:vertical;background:var(--surface)}
+textarea.reflect-input:focus{outline:2px solid var(--warn);border-color:transparent}
+.reflect-note{padding:0 26px 18px;font-size:12.5px;color:var(--muted)}
+
+.results-wrap{max-width:760px;margin:0 auto;padding:36px 24px 70px}
+.results-hero{margin-bottom:26px}
+.results-hero .badge{display:inline-block;font-family:var(--font-mono);font-size:12px;font-weight:600;color:var(--accent,var(--brand));text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px}
+.results-hero h1{font-family:var(--font-head);font-size:32px;font-weight:700;line-height:1.12;margin-bottom:10px;letter-spacing:-.02em}
+.results-hero p{color:var(--muted);font-size:15.5px;max-width:58ch}
+.ending-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:24px;box-shadow:var(--sh-2);margin-bottom:20px;border-left:3px solid var(--accent,var(--brand))}
+.ending-card h3{font-family:var(--font-head);font-size:20px;font-weight:600;margin-bottom:8px}
+.score-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.score-tile{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:17px;box-shadow:var(--sh-1)}
+.score-tile .big{font-family:var(--font-head);font-size:30px;font-weight:700;line-height:1}
+.score-tile .lbl{font-size:12px;font-weight:600;color:var(--muted);margin-top:6px}
+.score-status{display:inline-block;margin-top:9px;font-family:var(--font-mono);font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:6px}
+.results-section-title{font-family:var(--font-mono);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:24px 0 12px}
+.comp-grid{display:flex;flex-wrap:wrap;gap:8px}
+.comp-pill{font-size:12.5px;font-weight:600;padding:6px 12px;border-radius:99px;border:1px solid var(--line);background:var(--surface);color:var(--muted)}
+.comp-pill.on{background:var(--brand-soft);border-color:#d8d9fb;color:var(--brand-ink)}
+.results-cta{display:flex;gap:11px;margin-top:28px;flex-wrap:wrap}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.55);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px}
+.modal{background:var(--surface);border-radius:var(--r-lg);max-width:460px;width:100%;padding:26px;box-shadow:var(--sh-3)}
+.modal h3{font-family:var(--font-head);font-size:20px;font-weight:600;margin-bottom:8px}
+.modal p{color:var(--ink-2);font-size:14px;margin-bottom:14px}
+.modal .actions{display:flex;gap:10px;justify-content:flex-end;margin-top:6px}
+
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:13.5px;font-weight:500;padding:11px 20px;border-radius:99px;box-shadow:var(--sh-3);z-index:120;opacity:0;transition:.25s ease;pointer-events:none}
+.toast.show{opacity:1}
+
+/* ===== COURSE DETAIL (tier + option picker) ===== */
+#course-view{min-height:100vh;background:var(--canvas)}
+.cd-top{position:sticky;top:0;z-index:30;background:rgba(246,247,249,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.cd-top-in{display:flex;align-items:center;justify-content:space-between;height:58px}
+.cd-code{font-family:var(--font-mono);font-size:12.5px;font-weight:600;color:var(--accent);background:var(--accent-soft);padding:4px 10px;border-radius:7px}
+.cd-wrap{max-width:920px;margin:0 auto;padding:26px 24px 70px}
+.cd-head{display:flex;gap:18px;align-items:flex-start;margin-bottom:8px}
+.cd-ic{width:58px;height:58px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:28px;border:1px solid;flex:none}
+.cd-head h1{font-family:var(--font-head);font-size:27px;font-weight:700;letter-spacing:-.02em;line-height:1.12;margin-bottom:6px}
+.cd-role{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin-bottom:4px}
+.cd-head p{font-size:14.5px;color:var(--ink-2);max-width:62ch}
+.cd-bar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin:18px 0 22px;padding-bottom:18px;border-bottom:1px solid var(--line)}
+.cd-hint{font-size:13.5px;color:var(--muted);margin:0;max-width:54ch}
+.tier-block{margin-bottom:26px}
+.tier-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.tier-name{font-family:var(--font-head);font-size:17px;font-weight:600}
+.tier-sub{font-size:12.5px;color:var(--muted);margin-top:1px}
+.tier-count{font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--muted);background:var(--surface);border:1px solid var(--line);padding:3px 9px;border-radius:6px}
+.opt-list{display:flex;flex-direction:column;gap:10px}
+.opt-row{display:flex;align-items:center;gap:16px;justify-content:space-between;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;box-shadow:var(--sh-1);transition:.14s ease}
+.opt-row:hover{border-color:var(--line-2);box-shadow:var(--sh-2)}
+.opt-main{min-width:0}
+.opt-name{font-family:var(--font-head);font-size:15.5px;font-weight:600;margin-bottom:3px}
+.opt-blurb{font-size:13.5px;color:var(--ink-2);margin-bottom:7px}
+.opt-meta{display:flex;flex-wrap:wrap;gap:8px;font-family:var(--font-mono);font-size:11px;color:var(--muted)}
+.opt-actions{display:flex;gap:8px;flex:none}
+.opt-empty{font-size:13px;color:var(--faint);background:var(--surface);border:1px dashed var(--line-2);border-radius:var(--r);padding:14px 16px}
+
+/* name field on intro */
+.name-row{padding:0 26px 8px}
+.name-row label{display:block;font-size:12.5px;font-weight:600;color:var(--ink-2);margin-bottom:6px}
+.name-row label span{font-weight:400;color:var(--muted)}
+.name-row input{width:100%;padding:10px 13px;border:1px solid var(--line-2);border-radius:var(--r-sm);font-family:inherit;font-size:14.5px;background:var(--surface)}
+.name-row input:focus{outline:2px solid var(--accent);border-color:transparent}
+
+/* part marker on stepper */
+.pstep.part::after{content:"";position:absolute;right:-5px;top:50%;width:8px;height:8px;background:var(--accent,var(--brand));border:1.5px solid var(--canvas);border-radius:99px;transform:translateY(-50%);z-index:1}
+.prog-cap .rf.part{color:var(--accent,var(--brand))}
+.prog-cap .rf.part::before{background:var(--accent,var(--brand));border-radius:99px;transform:none}
+
+/* long reflection + submit panel */
+textarea.reflect-input.long{min-height:150px}
+.submit-panel{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px 20px;margin-top:26px;box-shadow:var(--sh-1)}
+.submit-txt{font-size:14px;color:var(--ink-2);max-width:46ch}
+.submit-txt strong{color:var(--ink)}
+.submit-btns{display:flex;gap:10px;flex-wrap:wrap}
+
+@media(max-width:880px){
+  .app-shell{flex-direction:column}
+  .sidebar{width:100%;height:auto;position:sticky;top:0;flex-direction:row;align-items:center;padding:10px 16px;gap:14px;z-index:40}
+  .side-brand{border:none;margin:0;padding:0;flex:1}
+  .side-label,.side-foot{display:none}
+  .side-nav{flex-direction:row;gap:2px}
+  .side-link{padding:8px 10px;font-size:13px}
+  .side-link .gi{display:none}
+  .topbar{padding:0 18px}
+  .page{padding:22px 18px 50px}
+  .overview{grid-template-columns:1fr}
+  .steps,.panel-grid,.meters,.score-grid{grid-template-columns:1fr}
+  
+}
+@media(max-width:560px){.sim-grid{grid-template-columns:1fr}.meters,.score-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<div id="home-view">
+ <div class="app-shell">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="side-brand">
+      <span class="mark">&gt;_</span>
+      <span class="nm">Simulation Lab<small>Dr. Henley</small></span>
+    </div>
+    <div class="side-label">Workspace</div>
+    <nav class="side-nav">
+      <button class="side-link" onclick="App.go('overview')"><span class="gi">◧</span> Overview</button>
+      <button class="side-link" onclick="App.go('catalog')"><span class="gi">▦</span> Simulations</button>
+      <button class="side-link" onclick="App.go('how')"><span class="gi">◔</span> How it works</button>
+      <button class="side-link" onclick="App.go('instructor')"><span class="gi">◑</span> For instructors</button>
+    </nav>
+    <div class="side-foot">Decision simulations<br>for courses and clients</div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <header class="topbar">
+      <div class="crumb">Overview <b>· Simulation library</b></div>
+      <div class="tb-actions">
+        <button class="btn btn-line" onclick="App.go('instructor')">For instructors</button>
+        <button class="btn btn-primary" onclick="App.go('catalog')">Browse</button>
+      </div>
+    </header>
+
+    <div class="page">
+      <!-- OVERVIEW -->
+      <section id="overview" class="overview">
+        <div class="hero-panel">
+          <span class="tagline">▸ Dr. Henley Simulation Lab</span>
+          <h1>Judgment is the thing you can't lecture.</h1>
+          <p>Step into a professional role and make the calls a course is preparing you for, under the constraints that make them hard. There is usually a strongest choice, but the aim is a defensible decision you can explain, not a hunt for the answer key.</p>
+          <div class="cta">
+            <button class="btn btn-primary btn-lg" onclick="App.go('catalog')">Pick a simulation →</button>
+            <button class="btn btn-line btn-lg" onclick="App.go('how')">How it works</button>
+          </div>
+        </div>
+        <div class="stat-stack">
+          <div class="stat-card"><span class="big">8</span><span class="meta"><b>Decisions</b>Two reflection checkpoints</span></div>
+          <div class="stat-card"><span class="big">0</span><span class="meta"><b>Accounts needed</b>Nothing leaves the browser</span></div>
+          <div class="stat-card"><span class="big">12</span><span class="meta"><b>Skills tracked</b>With a submittable summary</span></div>
+        </div>
+      </section>
+
+      <!-- HOW -->
+      <section id="how" class="sec">
+        <div class="sec-head"><h2>How a simulation works</h2><span class="hint">The same rhythm, mapped to each course's outcomes</span></div>
+        <div class="steps">
+          <div class="step"><div class="n">1</div><h3>A role and a real problem</h3><p>You take a job title from the field and work a scenario built around the course outcomes, with a reference binder of the data, formulas, and definitions you would actually have on hand.</p></div>
+          <div class="step"><div class="n">2</div><h3>Calls that carry weight</h3><p>Every decision moves a set of meters, and every choice tells you why it landed the way it did. Reflection checkpoints stop the action and ask you to put your reasoning in your own words.</p></div>
+          <div class="step"><div class="n">3</div><h3>Reasoning made submittable</h3><p>You close with a read on how sound your calls were and a summary you can copy or download: scores, every reflection, and the full decision record, ready to paste into an assignment.</p></div>
+        </div>
+      </section>
+
+      <!-- CATALOG -->
+      <section id="catalog" class="sec">
+        <div class="sec-head"><h2>Simulations</h2><span class="hint">Open one, then pick a length and scenario</span></div>
+        <div class="sim-grid" id="sim-grid"></div>
+      </section>
+
+      <!-- INSTRUCTOR -->
+      <section id="instructor" class="sec">
+        <div class="sec-head"><h2>For instructors</h2><span class="hint">No accounts, logins, or class codes needed</span></div>
+        <p class="instr-intro">Students open the page in a browser, pick a scenario, and work through it. There is nothing to set up and no data leaves their computer. When they finish they copy or download a one-page summary with their scores, reflections, decision record, and time spent, and hand that in however you already collect work.</p>
+        <div class="steps instr-tips">
+          <div class="step"><div class="n">1</div><h3>Fits a single class meeting</h3><p>The 30-minute run is 8 decisions with two reflection checkpoints. In a 75-minute period that leaves room for about 10 minutes of framing, the run itself, and a solid 20 minutes of debrief while the decisions are still fresh.</p></div>
+          <div class="step"><div class="n">2</div><h3>Grade the reflections, not the score</h3><p>The meters are feedback for the student. The graded thinking is in the reflections, where they explain in their own words why they made the calls they did. Every response appears verbatim in the summary.</p></div>
+          <div class="step"><div class="n">3</div><h3>Collect the summary</h3><p>Students can copy the summary as plain text to paste straight into a discussion post or assignment box, or download it as a formatted file. Either way it carries their name, scores, reflections, and full decision record.</p></div>
+          <div class="step"><div class="n">4</div><h3>Compare paths in the debrief</h3><p>The decision record shows exactly what each student chose. Asking two students who diverged on the same decision to defend their reasoning is usually a better discussion than reviewing the correct answers.</p></div>
+          <div class="step"><div class="n">5</div><h3>The reference binder is open during play</h3><p>Each scenario carries its own binder of data tables, procedures, formulas, and definitions, reachable at any point in the run. Students are not being tested on recall.</p></div>
+          <div class="step"><div class="n">6</div><h3>Try it yourself first</h3><p>Because there are no accounts, you can play a full scenario in half an hour and see exactly what your students will see, including the summary they will hand you.</p></div>
+        </div>
+        <div class="instr-foot">
+          <p><b>Adding a simulation:</b> each one is a single entry in the data file, listing the meters, an optional reference binder, the rounds of decisions with their reflection prompts, and the endings. Nothing in the engine needs to change to add a new course, a new scenario, or a build for another instructor or client.</p>
+          <button class="btn btn-primary" onclick="App.go('catalog')">Browse the scenarios →</button>
+        </div>
+      </section>
+
+      <p class="footnote">Dr. Henley Simulation Lab — an early build. Scenario content is independently authored for teaching practice. AI tools were used to help build out the simulation scenarios, which were reviewed for instructional fit.</p>
+    </div>
+  </div>
+ </div>
+</div>
+
+<div id="course-view" class="hidden"></div>
+<div id="game-view" class="hidden"></div>
+<div id="toast" class="toast"></div>
+<div id="modal-root"></div>
+<input type="file" id="progress-file" accept=".json,application/json" style="display:none" onchange="App.handleProgressFile(this)" />
+<script>
+/* ===== Dr. Henley Simulation Lab - DATA ===== */
+/* Scenario library. Each entry pairs a course (or client engagement) with one or
+   more playable scenarios, grouped by length tier. Adding a new simulation means
+   adding one COURSES entry and one SCENARIOS entry. Nothing else changes. */
+
+const COMPETENCIES = [
+  "Study Design","Procedure Selection","Checking Conditions","Estimation & Intervals",
+  "Hypothesis Testing","Interpreting Uncertainty","Practical Significance","Causal Reasoning",
+  "Excel Fluency","Statistical Communication","Ethical Judgment","Decision Support"
+];
+
+const COURSES = [
+  { id:"mat240", code:"MAT 240", role:"Data Analyst", icon:"📈", accent:"#0d9488", soft:"#dcf5f1",
+    title:"Applied Statistics", tags:["Inference","Interpretation"],
+    desc:"A pilot program lands on your desk with a borderline result and an executive who wants a yes. Choose the right procedure, check it, and say what the numbers actually support.",
+    long:"Applied statistical inference under real pressure: sampling and bias, choosing between procedures, checking conditions, reading confidence intervals and p-values honestly, separating statistical from practical significance, and refusing to turn correlation into cause." },
+];
+
+/* ============================================================
+   MAT 240 - Northwood Coffee loyalty pilot
+   Cumulative over Ch 6-9 and 12: sampling distributions, inference
+   for proportions and means, two-population comparison, regression.
+   8 decisions, 2 rounds, a reflection checkpoint after each.
+   ============================================================ */
+
+const MAT240_METERS = [
+  { key:"validity", label:"Statistical Validity", init:54, color:"#0d9488" },
+  { key:"trust",    label:"Stakeholder Trust",    init:58, color:"#2563eb" },
+  { key:"decision", label:"Decision Quality",     init:52, color:"#7c3aed" },
+];
+
+const MAT240_PILOT = {
+  meters: MAT240_METERS,
+
+  reference: [
+    { title:"Company brief - Northwood Coffee",
+      body:[
+        "Northwood Coffee runs 62 cafes across northern New England. Six months ago the company launched a mobile loyalty app in a pilot group of stores while the rest kept the old punch card. You are the analyst who has to say whether the app earned its rollout.",
+        "The VP of Retail is the decision maker. She is numerate but impatient, she has already told the board the app is working, and she wants a recommendation before the Monday planning meeting."
+      ] },
+
+    { title:"The pilot data",
+      table:{ columns:["Measure","Pilot stores (app)","Control stores (punch card)"], rows:[
+        ["Customers tracked","1,240","1,190"],
+        ["Returned within 30 days","379","322"],
+        ["Return rate","30.6%","27.1%"],
+        ["Transactions analyzed","30,900","30,100"],
+        ["Average spend per visit","$4.62","$4.51"],
+        ["Std. dev. of spend","$2.40","$2.38"],
+      ]} },
+
+    { title:"Results you have already computed",
+      table:{ columns:["Quantity","Value"], rows:[
+        ["Difference in return rates","3.5 percentage points"],
+        ["95% CI for the difference","-0.1 to +7.1 percentage points"],
+        ["Two-proportion test p-value","0.057"],
+        ["Difference in average spend","$0.11 (p < 0.001)"],
+        ["Correlation, app signups vs store revenue","r = 0.72"],
+      ]} },
+
+    { title:"Choosing a procedure",
+      table:{ columns:["The question","Data type","Procedure"], rows:[
+        ["Is one group's rate different from another's?","Categorical, two groups","Two-proportion test or CI for the difference"],
+        ["How big is the difference in rates?","Categorical, two groups","Confidence interval for p1 - p2"],
+        ["Is one group's average different from another's?","Quantitative, two groups","Two-sample t test or CI"],
+        ["Has a single rate moved off a known benchmark?","Categorical, one group","One-proportion test"],
+        ["Do two quantitative variables move together?","Two quantitative","Correlation and linear regression"],
+      ]} },
+
+    { title:"Conditions worth checking",
+      table:{ columns:["Procedure","What has to hold"], rows:[
+        ["Proportions","Independent observations; enough successes AND failures in each group. A handful of successes is not enough, no matter how large the group."],
+        ["Means","Independent observations; roughly normal population or a large enough sample for the CLT to carry you."],
+        ["Any of them","The sample has to actually represent the population you want to talk about. No procedure repairs a biased sample."],
+      ]} },
+
+    { title:"Excel functions",
+      table:{ columns:["Function","What it gives you"], rows:[
+        ["NORM.S.INV(0.975)","The z critical value for 95% confidence (1.96)"],
+        ["NORM.S.DIST(z, TRUE)","Area to the left of z under the standard normal"],
+        ["T.INV.2T(0.05, df)","Two-tailed t critical value"],
+        ["T.DIST.2T(t, df)","Two-tailed p-value for a positive t"],
+        ["CONFIDENCE.NORM(alpha, sd, n)","Margin of error using z"],
+        ["CORREL(x_range, y_range)","Correlation coefficient r"],
+        ["SLOPE / INTERCEPT / RSQ","Regression line and r squared"],
+        ["Data Analysis ToolPak","Regression, t-Test: Two-Sample Assuming Unequal Variances"],
+      ]} },
+
+    { title:"Key terms",
+      terms:[
+        ["p-value","How surprising this data would be if there were truly no difference. Not the probability that the claim is true."],
+        ["Confidence level","A property of the method, not of one interval. 95% of intervals built this way capture the true value."],
+        ["Practical significance","Whether a real difference is big enough to change what anyone should do."],
+        ["Confounding variable","Something related to both variables that can manufacture an association out of nothing."],
+        ["Voluntary response","A sample of people who selected themselves in. Systematically different from those who did not."],
+      ] },
+  ],
+
+  intro:{
+    setting:"Northwood Coffee · the loyalty pilot lands on your desk",
+    startLabel:"Open the pilot file",
+    briefing:[
+      "You are the analyst at Northwood Coffee, a 62-store cafe chain. Six months ago the company piloted a mobile loyalty app in a subset of stores and left the rest on the old punch card. The VP of Retail wants to roll the app out to all 62 stores and has asked you for the analysis that justifies it.",
+      "The numbers are already computed and sitting in your reference binder. That is not the hard part. The hard part is that the result is borderline, the VP has already told the board it works, and every choice you make about which procedure to run, which conditions to check, and how to phrase the finding will either hold up under scrutiny or will not.",
+      "Eight decisions, with a reflection checkpoint halfway through and at the end. There is usually a strongest call, but the point is defensible judgment, not a hunt for the answer key."
+    ],
+    comps:["Procedure Selection","Interpreting Uncertainty","Statistical Communication","Ethical Judgment"]
+  },
+
+  rounds:[
+    /* ---------------- ROUND 1 ---------------- */
+    { reflection:{ prompt:"In the first four decisions you chose a sample to trust, picked a procedure, checked whether it was allowed, and decided what to report. Pick the one where the careful choice took longer than the quick one, and explain in your own words what the careful version protected that the shortcut would have quietly destroyed." },
+      turns:[
+
+        { kicker:"The Sample", contextTag:"Study design",
+          title:"Marketing hands you survey results and says the question is settled.",
+          body:[
+            "Marketing emailed a satisfaction survey to everyone enrolled in the loyalty app and got 2,100 responses. 81% said the app made them visit Northwood more often. The VP wants to lead the board deck with that number.",
+            "The survey went only to app users, and only people who felt like answering responded. You also have the full transaction database for both pilot and control stores sitting right there."
+          ],
+          choices:[
+            { key:"A", text:"Set the survey aside as evidence of impact and build the analysis on the transaction data for both groups.", best:true,
+              consequence:"The survey sampled people who already opted into the app and then filtered again to those motivated enough to reply. It cannot tell you what the app did to customer behavior overall, because the customers it excludes are exactly the ones it would need to include. The transaction data covers pilot and control stores with a comparison group attached, which is what the question actually requires. You keep the survey as color for the deck and take the number out of the evidence.",
+              deltas:{validity:+15,trust:+5,decision:+6}, comps:["Study Design","Decision Support"] },
+            { key:"B", text:"Use the 81% as the headline and support it with the transaction data.",
+              consequence:"Leading with a voluntary-response number from a self-selected group puts your least defensible figure in the most prominent position. The first analyst who asks who was surveyed will find the answer in about a minute, and everything underneath it inherits the doubt.",
+              deltas:{validity:-11,trust:-6}, comps:[] },
+            { key:"C", text:"Weight the survey responses to match the customer base and use it as the primary measure.",
+              consequence:"Weighting can repair a sample that is unrepresentative on measured traits like age or region. It cannot repair a sample that excluded non-app-users entirely and then let respondents select themselves. There is no weight for the people who were never eligible to answer.",
+              deltas:{validity:-7,decision:-4}, comps:["Study Design"] },
+            { key:"D", text:"Run the survey again with a bigger sample so the result is more reliable.",
+              consequence:"A larger voluntary-response sample gives you a more precise estimate of the same bias. Sample size fixes random error, not systematic error, and this error is entirely systematic.",
+              deltas:{validity:-5,decision:-3}, comps:["Study Design"] },
+          ]},
+
+        { kicker:"Picking the Tool", contextTag:"Procedure selection",
+          title:"The real question: did the 30-day return rate go up in pilot stores?",
+          body:[
+            "You have two independent groups of customers, pilot and control, and for each customer a yes or no on whether they came back within 30 days. 379 of 1,240 pilot customers returned. 322 of 1,190 control customers did.",
+            "Before you compute anything, you have to name the procedure, because the procedure determines what the output is even allowed to mean."
+          ],
+          choices:[
+            { key:"A", text:"A two-proportion comparison between the pilot and control groups.", best:true,
+              consequence:"Two independent groups, a categorical yes-or-no outcome per person, and a question about whether the rates differ. That is a two-proportion procedure, and it is the only one here that uses the control group, which is the entire reason the pilot was designed with one.",
+              deltas:{validity:+14,decision:+7,trust:+3}, comps:["Procedure Selection","Hypothesis Testing"] },
+            { key:"B", text:"A paired t-test comparing each pilot store to itself before and after launch.",
+              consequence:"Pairing requires the same units measured twice, and these are different customers in different stores. It also throws away the control group, which means any seasonal or economic shift over those six months gets counted as app effect. The control group exists precisely to absorb that.",
+              deltas:{validity:-10,decision:-6}, comps:["Procedure Selection"] },
+            { key:"C", text:"A one-proportion test of the pilot rate against last year's company-wide 27% benchmark.",
+              consequence:"This is closer, but it silently assumes nothing else changed since last year. You have a control group running concurrently, which is strictly better evidence than a historical benchmark. Using the benchmark instead means discarding the best feature of the study design.",
+              deltas:{validity:-5,decision:-4}, comps:["Procedure Selection"] },
+            { key:"D", text:"Just report both percentages and let leadership judge whether 30.6% beats 27.1%.",
+              consequence:"30.6% is larger than 27.1%, but two sample percentages always differ by something. Without inference you have no way to say whether a gap this size is more than the sampling noise you would expect from two groups of this size, which is the only question anyone is actually asking.",
+              deltas:{validity:-12,decision:-7,trust:-3}, comps:[] },
+          ]},
+
+        { kicker:"Before You Trust It", contextTag:"Checking conditions",
+          title:"The VP wants the result broken out for the Littleton store.",
+          body:[
+            "Littleton is her favorite location and she wants its own number in the deck. It is a small store: 14 tracked customers in the pilot window, 3 of whom returned within 30 days.",
+            "The company-wide comparison has over a thousand customers on each side and comfortably clears every condition. Littleton on its own does not."
+          ],
+          choices:[
+            { key:"A", text:"Decline the store-level test, explain the condition it fails, and offer the company-wide result instead.", best:true,
+              consequence:"Three successes is not enough to justify the normal approximation behind a proportion procedure, and an interval computed from 14 customers would be so wide it could not rule anything out. You tell her plainly that Littleton cannot carry its own inference, and that the pooled result is the defensible number. Refusing to produce a bad statistic is part of the job.",
+              deltas:{validity:+16,trust:+7,decision:+5}, comps:["Checking Conditions","Ethical Judgment"] },
+            { key:"B", text:"Run it anyway and add a footnote that the sample is small.",
+              consequence:"A footnote does not repair a violated condition, and nobody reads footnotes off a slide. The number goes into the deck, gets quoted in the meeting, and travels without its caveat. Producing a figure you know is invalid and labeling it quietly is not the same as declining to produce it.",
+              deltas:{validity:-11,trust:-4}, comps:["Checking Conditions"] },
+            { key:"C", text:"Pool Littleton with the two nearest stores to get the numbers up.",
+              consequence:"This is a reasonable instinct and sometimes the right move, but you would be inventing a grouping after seeing the data, and the result would no longer answer the question she asked about Littleton. If regional grouping is meaningful, define the regions first and analyze all of them, not just the one that needs rescuing.",
+              deltas:{validity:-4,decision:-3}, comps:["Checking Conditions"] },
+            { key:"D", text:"Report Littleton's 21.4% return rate as a plain descriptive figure with no test.",
+              consequence:"Honest as far as it goes, and better than a fake test. But 3 out of 14 presented next to inferential results from the full study invites the reader to treat it as comparable evidence when it is not. If you show it, the framing has to do more work than this.",
+              deltas:{validity:+3,trust:+1}, comps:["Statistical Communication"] },
+          ]},
+
+        { kicker:"What to Report", contextTag:"Estimation",
+          title:"She asks the only question she actually cares about: how much did it go up?",
+          body:[
+            "Your test produced a p-value of 0.057. Your confidence interval for the difference in return rates runs from -0.1 to +7.1 percentage points, centered on 3.5.",
+            "She is not asking whether the effect is real. She is asking how big it is, so she can decide whether the rollout pays for itself."
+          ],
+          choices:[
+            { key:"A", text:"Lead with the interval, because it is the only output that answers a question about magnitude.", best:true,
+              consequence:"A p-value answers whether, not how much. The interval says the data are consistent with anything from a hair below zero to about seven points of lift, and the rollout math is very different at each end. Giving her the range lets her weigh the decision against what the program costs, which is the decision she is actually making.",
+              deltas:{validity:+13,decision:+11,trust:+7}, comps:["Estimation & Intervals","Decision Support"] },
+            { key:"B", text:"Lead with the p-value, since significance is the standard the board expects.",
+              consequence:"The p-value is the wrong instrument for this question. It tells her something about compatibility with no effect and nothing at all about size, so she would have to guess at the magnitude that drives the entire rollout calculation.",
+              deltas:{decision:-6,trust:-2}, comps:["Hypothesis Testing"] },
+            { key:"C", text:"Report the 3.5 point difference as the answer and leave the uncertainty out of the headline.",
+              consequence:"3.5 points is your best single estimate, but presenting it bare implies a precision the study does not support. The whole width of that interval is the story, and stripping it out is how a borderline finding gets remembered as a settled one.",
+              deltas:{validity:-8,trust:-5,decision:-4}, comps:["Estimation & Intervals"] },
+            { key:"D", text:"Give her the p-value and the interval and let her decide which matters.",
+              consequence:"Both belong in the written analysis, and including them is not wrong. But handing an executive two statistics with no guidance about which answers her question is a quiet abdication. Part of your job is knowing which number the decision turns on.",
+              deltas:{validity:+4,decision:+2}, comps:["Statistical Communication"] },
+          ]},
+      ]},
+
+    /* ---------------- ROUND 2 ---------------- */
+    { reflection:{ prompt:"The second half was about saying true things to someone who wanted a different answer. Choose one moment where the honest phrasing was harder or less satisfying than the phrasing the VP was hoping for, and explain what you would have given up by rounding it in her favor. Then describe how you would say it out loud in the Monday meeting, in language a non-statistician would follow." },
+      turns:[
+
+        { kicker:"The Borderline Result", contextTag:"Interpreting uncertainty",
+          title:"p = 0.057. She reads it over your shoulder and says: so it worked.",
+          body:[
+            "The threshold was set at 0.05 before the pilot began. The result came in just above it. The interval runs from -0.1 to +7.1 points, so it does not quite exclude zero, but almost all of its width sits on the positive side.",
+            "She has already told the board the app is working. What you say next is what she repeats on Monday."
+          ],
+          choices:[
+            { key:"A", text:"Say the evidence is suggestive but short of the bar you set, the plausible range still includes real lift, and recommend extending the pilot to settle it.", best:true,
+              consequence:"This is the honest read and it is also the useful one. You do not have enough evidence to declare the effect real at the standard you committed to in advance, but the data lean positive and the interval contains effects worth having. Extending the pilot converts an ambiguous result into a decisive one for a fraction of what a failed 62-store rollout costs. You gave her a real option instead of a verdict she would have to defend.",
+              deltas:{validity:+14,trust:+12,decision:+13}, comps:["Interpreting Uncertainty","Statistical Communication","Decision Support"] },
+            { key:"B", text:"Tell her the result is not significant, so the app does not work and the rollout should be cancelled.",
+              consequence:"Failing to find enough evidence is not the same as finding evidence of no effect. Your interval extends to seven points of lift, which would be a substantial win. Treating p = 0.057 as proof of nothing throws away a program that may well work, and it is the same logical error as declaring victory, just pointed the other way.",
+              deltas:{validity:-9,decision:-8}, comps:["Interpreting Uncertainty"] },
+            { key:"C", text:"Note that 0.057 is close enough, move the threshold to 0.10, and call it significant.",
+              consequence:"Choosing the threshold after seeing the result means the threshold is no longer doing any work. If 0.10 was defensible, it was defensible last month when nobody knew which side the number would land on. Moving it now is the cleanest possible example of letting the desired conclusion pick the standard.",
+              deltas:{validity:-16,trust:-10,decision:-6}, comps:["Ethical Judgment"] },
+            { key:"D", text:"Tell her there is a 94.3% chance the app works.",
+              consequence:"A p-value is computed assuming there is no effect. It is the probability of data this extreme under that assumption, not the probability that the assumption is false. One minus the p-value is not the probability the app works, and this phrasing is the single most common way that gets garbled on its way to a boardroom.",
+              deltas:{validity:-13,trust:-5}, comps:["Interpreting Uncertainty"] },
+          ]},
+
+        { kicker:"The Chief of Staff's Slide", contextTag:"Communicating intervals",
+          title:"A draft slide reads: 95% chance the true lift is between -0.1 and 7.1 points.",
+          body:[
+            "It is going into the board deck tomorrow. The chief of staff wrote it, he is proud of having included the uncertainty at all, and he is not a statistician.",
+            "The sentence is wrong in a specific way, and it is also very close to right."
+          ],
+          choices:[
+            { key:"A", text:"Fix it to say the method captures the true value 95% of the time, and credit him for putting the range on the slide.", best:true,
+              consequence:"The confidence is a property of the procedure, not of this one interval. Once the interval is computed, the true difference is either inside it or it is not. You give him wording he can actually use, something like we are 95% confident the true lift falls in this range, and you make clear that including the range at all was the right instinct. Correcting the statement without discouraging the behavior is the whole trick.",
+              deltas:{validity:+12,trust:+10,decision:+5}, comps:["Interpreting Uncertainty","Statistical Communication"] },
+            { key:"B", text:"Leave it. The distinction is technical and the slide conveys the right general idea.",
+              consequence:"It is a near miss rather than a disaster, and the impulse to avoid pedantry is sound. But this particular error is what lets people say there is a 95% chance the effect is positive, which is precisely the overclaim your analysis was built to prevent. Letting it stand hands them the sentence.",
+              deltas:{validity:-6,decision:-3}, comps:[] },
+            { key:"C", text:"Replace the interval with the single 3.5 point estimate to avoid confusing the board.",
+              consequence:"Removing the uncertainty because it is hard to phrase correctly is a large step backward from a slide that was almost right. The range is the finding. Simplifying it away leaves the board more confident than the data warrant.",
+              deltas:{validity:-9,trust:-4}, comps:["Estimation & Intervals"] },
+            { key:"D", text:"Rewrite the slide yourself without telling him, so it is right and nobody is embarrassed.",
+              consequence:"The slide ends up correct, which matters. But he will present it, he still holds the wrong mental model, and he will improvise the explanation when someone asks a follow-up question. Fixing the artifact without fixing the understanding means the same error returns next quarter.",
+              deltas:{validity:+5,trust:-3}, comps:["Statistical Communication"] },
+          ]},
+
+        { kicker:"The Other Metric", contextTag:"Practical significance",
+          title:"Average spend per visit is up $0.11, and this time p < 0.001.",
+          body:[
+            "Across roughly 30,000 transactions per group, pilot stores averaged $4.62 per visit against $4.51 in control stores. With samples that large the difference is unambiguously statistically significant.",
+            "The app costs about $1.90 per active customer per year to run. The VP sees a tiny p-value and wants this as the second headline."
+          ],
+          choices:[
+            { key:"A", text:"Report it as real but small, and put it next to the program cost so the size is visible.", best:true,
+              consequence:"With 30,000 transactions per group, even trivial differences clear significance easily, because significance is partly a statement about sample size. Eleven cents a visit is almost certainly a real difference and still needs roughly seventeen visits per customer per year just to cover the program. Setting the effect against the cost is what turns a statistic into a decision.",
+              deltas:{validity:+13,decision:+12,trust:+8}, comps:["Practical Significance","Decision Support"] },
+            { key:"B", text:"Feature it as the strongest finding, since it is the most statistically significant result you have.",
+              consequence:"The p-value is small because the sample is enormous, not because the effect is large. Ranking findings by p-value puts an eleven-cent difference above a potential seven-point lift in return rate, which inverts their actual importance to the business.",
+              deltas:{validity:-10,decision:-9}, comps:["Practical Significance"] },
+            { key:"C", text:"Leave it out, since eleven cents is too small to matter.",
+              consequence:"It is small, but across 61,000 transactions it is not nothing, and omitting a real finding because it is unexciting is its own kind of editing. The problem with this result is framing, not existence.",
+              deltas:{decision:-4,trust:-2}, comps:["Practical Significance"] },
+            { key:"D", text:"Report the difference and the p-value accurately and let the reader judge the size.",
+              consequence:"Accurate, and defensible. But a p-value below 0.001 next to a dollar figure reads as important to almost everyone who is not a statistician, and you know that. Reporting correctly while knowing it will be misread is only half the job.",
+              deltas:{validity:+4,decision:+1}, comps:["Statistical Communication"] },
+          ]},
+
+        { kicker:"The Closing Argument", contextTag:"Correlation and causation",
+          title:"Stores with more app signups earn more revenue, r = 0.72. She wants that as the finale.",
+          body:[
+            "You ran the regression across all 62 stores. The correlation between app signups and annual revenue is 0.72, so about half the variation in revenue tracks with signups. The VP's proposed line is that every new signup drives roughly $340 in revenue, so the rollout pays for itself many times over.",
+            "You also know that the largest stores sit in the highest-traffic locations, and they have both the most signups and the most revenue."
+          ],
+          choices:[
+            { key:"A", text:"Report the association, name store traffic as the confounder, and point back to the randomized pilot as the real evidence.", best:true,
+              consequence:"Big stores get more of everything, signups included, so foot traffic inflates both variables and manufactures much of that correlation on its own. The regression across 62 stores cannot separate the app's effect from store size, but the pilot comparison was built to do exactly that. You steer the conclusion back to the study that can support it and explain why the flashier number cannot.",
+              deltas:{validity:+16,trust:+11,decision:+12}, comps:["Causal Reasoning","Statistical Communication","Ethical Judgment"] },
+            { key:"B", text:"Use the $340 per signup figure. The correlation is strong and the regression output is real.",
+              consequence:"The regression output is real and the causal claim attached to it is not. Presenting $340 per signup as the return on the rollout means the board will approve a budget against a number driven substantially by store size, and the shortfall will surface later with your name on the analysis.",
+              deltas:{validity:-16,trust:-9,decision:-8}, comps:[] },
+            { key:"C", text:"Rerun the regression controlling for store square footage and weekly foot traffic, then report it.",
+              consequence:"This is genuinely good analysis and a real improvement over the raw correlation. It is also more than you can finish before Monday, and even adjusted it remains observational. Worth proposing as the follow-up, but it should not displace the randomized comparison you already have.",
+              deltas:{validity:+8,decision:+4}, comps:["Causal Reasoning","Excel Fluency"] },
+            { key:"D", text:"Drop the regression entirely and present only the pilot comparison.",
+              consequence:"The pilot is your strongest evidence and leading with it is right. But the correlation exists, someone in the room will find it, and having a clear explanation ready for why it overstates the effect is better than having omitted it and being asked about it cold.",
+              deltas:{validity:+5,trust:+2}, comps:["Causal Reasoning"] },
+          ]},
+      ]},
+  ],
+
+  endings:[
+    { test:(m)=> m.validity>=75 && m.trust>=68 && m.decision>=70,
+      title:"The Analysis Held",
+      text:"You walked into Monday with a borderline result and walked out with a decision nobody has to walk back. The VP presented an extended pilot rather than a rollout, the board understood why, and the eleven-cent spend difference sat in the appendix where it belonged. What made it work was not that you found the right answer, because the data did not contain one yet. It was that at every point where the convenient number was available, you said what the evidence would actually support and offered a path to a better answer instead of a better-sounding one." },
+    { test:(m)=> m.validity>=60 && m.decision>=55,
+      title:"Defensible, With Rough Edges",
+      text:"The core of the analysis is sound and the recommendation will survive scrutiny. A couple of the calls gave more ground than they needed to, either in how a finding was framed or in what got left for the reader to sort out. Read back your own reasoning on the decisions where you hedged: the pattern usually shows up where the honest phrasing was less satisfying than the one being asked for, and that is exactly where the discipline has to come from you rather than from the numbers." },
+    { test:()=> true,
+      title:"The Number That Got Away",
+      text:"Several calls in this run let the desired conclusion pick the method, the threshold, or the framing. None of it is unusual and all of it is recoverable, which is what the simulation is for. Look at where your statistical validity dropped and check whether those moments share a shape: a condition waived, a threshold moved, a correlation promoted to a cause. Statistics does not fail loudly in situations like this one. It fails one reasonable-seeming accommodation at a time, and the first place it shows up is in what you were willing to say out loud." },
+  ]
+};
+
+const SCENARIOS = {
+  mat240: {
+    short: [
+      { id:"mat240-pilot", name:"Does the Loyalty App Work?", est:"~30 min",
+        topics:["Procedure choice","Intervals & p-values","Practical significance","Causation"],
+        blurb:"A borderline pilot result, an executive who has already promised the board it worked, and eight chances to say something true. Cumulative over inference and regression.",
+        sim: MAT240_PILOT },
+    ],
+    hour: [],
+    course: [],
+  },
+};
+</script>
+<script>
+/* ============ Dr. Henley Simulation Lab — ENGINE v3 ============ */
+/* Adds: course -> length tier -> multiple scenario options; a unified "rounds"
+   model (each round = decisions + a reflection); whole-course multi-part play
+   with save/resume (localStorage); and a downloadable submission summary. */
+const App = (function(){
+  const homeView   = () => document.getElementById('home-view');
+  const courseView = () => document.getElementById('course-view');
+  const gameView   = () => document.getElementById('game-view');
+  let state = null;
+
+  const TIERS = [
+    { key:"short",  label:"~30 minutes",  sub:"8 decisions · 2 reflections · one focused topic" },
+    { key:"hour",   label:"~1 hour",      sub:"16 decisions · 4 reflections · a couple of topics" },
+    { key:"course", label:"Whole course", sub:"4 parts across the term · longer reflections · save & resume" },
+  ];
+
+  /* ---------- utils ---------- */
+  const clamp = (n)=> Math.max(0, Math.min(100, Math.round(n)));
+  const esc = (s)=> String(s==null?'':s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  function tier(v){
+    if(v>=67) return {c:"#0d9488", soft:"#d7f0ed", label:"Strong"};
+    if(v>=34) return {c:"#d97706", soft:"#fbeed6", label:"Strained"};
+    return {c:"#e11d48", soft:"#fbdde4", label:"Critical"};
+  }
+  function toast(msg){
+    const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+    clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),2400);
+  }
+  function modal(html){ document.getElementById('modal-root').innerHTML = html; }
+  function closeModal(){ document.getElementById('modal-root').innerHTML=''; }
+  function lsGet(k){ try{return JSON.parse(localStorage.getItem(k));}catch(e){return null;} }
+  function lsSet(k,v){ try{localStorage.setItem(k,JSON.stringify(v));}catch(e){} }
+  function lsDel(k){ try{localStorage.removeItem(k);}catch(e){} }
+  function getName(){ return lsGet('dh_student_name') || ''; }
+
+  /* ---------- scenario lookup ---------- */
+  function course(id){ return COURSES.find(c=>c.id===id); }
+  function scenarioOptions(courseId, tierKey){ return (SCENARIOS[courseId]||{})[tierKey] || []; }
+  function findScenario(courseId, scId){
+    const groups = SCENARIOS[courseId]||{};
+    for(const tk of Object.keys(groups)){
+      const s=(groups[tk]||[]).find(x=>x.id===scId);
+      if(s) return {scenario:s, tier:tk};
+    }
+    return null;
+  }
+  function saveKey(scId){ return 'dh_run_'+scId; }
+
+  /* normalize a sim into rounds:[{title,intro,turns,reflection,partBreak}] */
+  function normalizePlan(sim){
+    if(sim.rounds) return sim.rounds.map(r=>({
+      title:r.title||null, intro:r.intro||null, turns:r.turns||[],
+      reflection:r.reflection||null, partBreak:!!r.partBreak, reference:r.reference||null
+    }));
+    // legacy: turns + reflectAfter + reflections
+    const rounds=[]; const bounds=(sim.reflectAfter||[]).slice().sort((a,b)=>a-b);
+    let prev=0;
+    bounds.forEach((b,i)=>{ rounds.push({turns:sim.turns.slice(prev,b), reflection: sim.reflections&&sim.reflections[i]?{prompt:sim.reflections[i]}:null, title:null,intro:null,partBreak:false}); prev=b; });
+    if(prev<sim.turns.length){ rounds.push({turns:sim.turns.slice(prev), reflection: sim.reflections&&sim.reflections[bounds.length]?{prompt:sim.reflections[bounds.length]}:null, title:null,intro:null,partBreak:false}); }
+    return rounds;
+  }
+  function totalDecisions(rounds){ return rounds.reduce((a,r)=>a+r.turns.length,0); }
+
+  /* ===================== HOME (course catalog) ===================== */
+  function renderHome(){ drawCards(); }
+  function go(sectionId){
+    if(!courseView().classList.contains('hidden') || !gameView().classList.contains('hidden')){
+      courseView().classList.add('hidden'); courseView().innerHTML='';
+      gameView().classList.add('hidden'); gameView().innerHTML='';
+      homeView().classList.remove('hidden');
+    }
+    const el=document.getElementById(sectionId); if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  function drawCards(){
+    const grid=document.getElementById('sim-grid');
+    grid.innerHTML = COURSES.map(c=>{
+      const groups=SCENARIOS[c.id]||{};
+      const count=Object.values(groups).reduce((a,arr)=>a+(arr?arr.length:0),0);
+      const tiersAvail=TIERS.filter(t=>(groups[t.key]||[]).length).length;
+      return `<div class="sim-card" style="--accent:${c.accent};--accent-soft:${c.soft}">
+        <div class="body">
+          <div class="toprow"><div class="ic">${c.icon}</div><span class="code">${esc(c.code)}</span></div>
+          <div class="role">${esc(c.role)}</div>
+          <h3>${esc(c.title)}</h3>
+          <div class="desc">${esc(c.desc)}</div>
+          <div class="tags">${c.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>
+        </div>
+        <div class="foot">
+          <span class="playable-badge">${count} scenario${count===1?'':'s'} · ${tiersAvail} tier${tiersAvail===1?'':'s'}</span>
+          <button class="btn btn-primary" style="background:${c.accent}" onclick="App.openCourse('${c.id}')">View →</button>
+        </div>
+      </div>`;}).join('');
+  }
+
+  /* ===================== COURSE DETAIL (tier + option picker) ===================== */
+  function openCourse(courseId){
+    const c=course(courseId);
+    const groups=SCENARIOS[courseId]||{};
+    const blocks = TIERS.map(t=>{
+      const opts=groups[t.key]||[];
+      const inner = opts.length ? opts.map(o=>scenarioRow(courseId,o)).join('')
+        : `<div class="opt-empty">More ${t.label.toLowerCase()} scenarios are planned — the structure is ready for them.</div>`;
+      return `<div class="tier-block">
+        <div class="tier-head"><div><div class="tier-name">${esc(t.label)}</div><div class="tier-sub">${esc(t.sub)}</div></div>
+          <span class="tier-count">${opts.length} option${opts.length===1?'':'s'}</span></div>
+        <div class="opt-list">${inner}</div>
+      </div>`;
+    }).join('');
+    homeView().classList.add('hidden'); gameView().classList.add('hidden');
+    const cv=courseView(); cv.classList.remove('hidden');
+    cv.style.setProperty('--accent', c.accent); cv.style.setProperty('--accent-soft', c.soft);
+    cv.innerHTML = `<div class="cd-top"><div class="wrap cd-top-in">
+        <button class="exit-btn" onclick="App.backHome()">← All simulations</button>
+        <span class="cd-code">${esc(c.code)}</span>
+      </div></div>
+      <div class="cd-wrap">
+        <div class="cd-head">
+          <div class="cd-ic" style="background:${c.soft};border-color:${c.accent}33">${c.icon}</div>
+          <div><div class="cd-role">${esc(c.role)}</div><h1>${esc(c.title)}</h1>
+          <p>${esc(c.long||c.desc)}</p></div>
+        </div>
+        <div class="cd-bar">
+          <p class="cd-hint">Pick a length, then a scenario. Each run ends with a summary you can copy or download and submit.</p>
+          <button class="btn btn-outline" onclick="App.loadProgressPrompt()">⇄ Load saved progress file</button>
+        </div>
+        ${blocks}
+      </div>`;
+    window.scrollTo(0,0);
+  }
+  function scenarioRow(courseId, o){
+    const saved=lsGet(saveKey(o.id));
+    const resumeable = saved && !saved.finished;
+    const dec = o.sim.rounds ? totalDecisions(normalizePlan(o.sim)) : (o.sim.turns?o.sim.turns.length:0);
+    return `<div class="opt-row">
+      <div class="opt-main">
+        <div class="opt-name">${esc(o.name)}</div>
+        <div class="opt-blurb">${esc(o.blurb)}</div>
+        <div class="opt-meta"><span>⏱ ${esc(o.est)}</span><span>•</span><span>${dec} decisions</span>${o.topics?`<span>•</span><span>${o.topics.map(esc).join(', ')}</span>`:''}</div>
+      </div>
+      <div class="opt-actions">
+        ${resumeable?`<button class="btn btn-outline" onclick="App.resumeScenario('${courseId}','${o.id}')">Resume</button>`:''}
+        <button class="btn btn-primary" style="background:var(--accent)" onclick="App.startScenario('${courseId}','${o.id}',${resumeable?'true':'false'})">${resumeable?'Restart':'Start'}</button>
+      </div>
+    </div>`;
+  }
+  function backHome(){ courseView().classList.add('hidden'); courseView().innerHTML=''; homeView().classList.remove('hidden'); document.getElementById('catalog').scrollIntoView(); }
+
+  /* ===================== SCENARIO LIFECYCLE ===================== */
+  function startScenario(courseId, scId, confirmRestart){
+    if(confirmRestart){
+      modal(`<div class="modal-overlay" onclick="if(event.target===this)App.closeModal()"><div class="modal">
+        <h3>Restart this scenario?</h3><p>You have a saved run in progress. Starting over will erase it.</p>
+        <div class="actions"><button class="btn btn-ghost" onclick="App.closeModal()">Keep saved run</button>
+        <button class="btn btn-primary" onclick="App.closeModal();App._begin('${courseId}','${scId}')">Restart</button></div>
+      </div></div>`); return;
+    }
+    _begin(courseId, scId);
+  }
+  function _begin(courseId, scId){
+    lsDel(saveKey(scId));
+    const f=findScenario(courseId, scId); const c=course(courseId);
+    const plan=normalizePlan(f.scenario.sim);
+    const sim=f.scenario.sim;
+    state={
+      courseId, scId, tierKey:f.tier, c, scenario:f.scenario, sim, plan,
+      meters:Object.fromEntries(sim.meters.map(m=>[m.key,m.init])),
+      roundIndex:0, turnIndex:0,
+      comps:[], bestCount:0, decisionLog:[], reflections:[],
+      studentName:getName(), finished:false,
+      elapsedMs:0, sessionStart:Date.now()
+    };
+    enterGame(); renderIntro();
+  }
+  function resumeScenario(courseId, scId){
+    const saved=lsGet(saveKey(scId)); if(!saved){ return startScenario(courseId,scId,false); }
+    const f=findScenario(courseId, scId); const c=course(courseId);
+    const sim=f.scenario.sim;
+    state={ courseId, scId, tierKey:f.tier, c, scenario:f.scenario, sim, plan:normalizePlan(sim),
+      meters:saved.meters, roundIndex:saved.roundIndex, turnIndex:saved.turnIndex,
+      comps:saved.comps||[], bestCount:saved.bestCount||0, decisionLog:saved.decisionLog||[],
+      reflections:saved.reflections||[], studentName:saved.studentName||getName(), finished:false,
+      elapsedMs:saved.elapsedMs||0, sessionStart:Date.now(),
+      phase:saved.phase||'play' };
+    enterGame();
+    toast('Resumed where you left off.');
+    if(state.phase==='reflection') return renderReflection();
+    if(state.phase==='partbreak') return renderPartBreak();
+    if(state.phase==='done') return finishRun();
+    renderRoundIntroOrPlay();
+  }
+  function enterGame(){
+    homeView().classList.add('hidden'); courseView().classList.add('hidden');
+    const g=gameView(); g.classList.remove('hidden');
+    g.style.setProperty('--accent', state.c.accent); g.style.setProperty('--accent-soft', state.c.soft);
+    window.scrollTo(0,0);
+  }
+  /* ---------- time on task ---------- */
+  /* Accumulate active wall-clock time on the scenario. We roll the current
+     session's elapsed time into state.elapsedMs at each clean boundary, capping
+     any single gap so an abandoned open tab doesn't inflate the total. Resuming
+     later (same or another computer) continues the accumulated total. */
+  const IDLE_CAP_MS = 15*60*1000;
+  function rollTime(){
+    if(!state) return;
+    if(state.sessionStart){
+      let delta = Date.now() - state.sessionStart;
+      if(delta > IDLE_CAP_MS) delta = IDLE_CAP_MS;
+      if(delta > 0) state.elapsedMs = (state.elapsedMs||0) + delta;
+    }
+    state.sessionStart = Date.now();
+  }
+  function fmtDuration(ms){
+    const s = Math.round((ms||0)/1000);
+    if(s < 60) return 'under a minute';
+    const m = Math.round(s/60);
+    if(m < 60) return m + ' min';
+    const h = Math.floor(m/60), rm = m%60;
+    return h + ' hr' + (rm ? ' ' + String(rm).padStart(2,'0') + ' min' : '');
+  }
+
+  /* checkpoint only at clean boundaries (start of a decision, a reflection, a part
+     break, or the end) so resume never re-applies an in-progress decision */
+  function checkpoint(phase){
+    if(!state) return;
+    rollTime();
+    state.phase=phase;
+    lsSet(saveKey(state.scId), {
+      meters:{...state.meters}, roundIndex:state.roundIndex, turnIndex:state.turnIndex,
+      comps:[...state.comps], bestCount:state.bestCount,
+      decisionLog:state.decisionLog.map(d=>({...d})), reflections:state.reflections.map(r=>({...r})),
+      studentName:state.studentName, finished:state.finished, phase,
+      elapsedMs:state.elapsedMs||0,
+      scId:state.scId, courseId:state.courseId, savedAt:Date.now()
+    });
+  }
+  function exitSim(){
+    const multi = state.plan.some(r=>r.partBreak);
+    modal(`<div class="modal-overlay" onclick="if(event.target===this)App.closeModal()"><div class="modal">
+      <h3>Leave this simulation?</h3>
+      <p>${multi?'Your progress is saved automatically — you can resume from the course page.':'This run is not finished. You can save your progress and resume later, or discard it.'}</p>
+      <div class="actions">
+        <button class="btn btn-ghost" onclick="App.closeModal()">Keep going</button>
+        ${multi?`<button class="btn btn-outline" onclick="App.exportProgress()">Save to file</button>`:`<button class="btn btn-outline" onclick="App.closeModal();App.saveAndExit()">Save & exit</button>`}
+        <button class="btn btn-primary" onclick="App.closeModal();App.discardExit()">${multi?'Exit (saved here)':'Discard & exit'}</button>
+      </div></div></div>`);
+  }
+  function saveAndExit(){ /* current screen already checkpointed */ toHomeCourse(); toast('Saved — resume from the course page.'); }
+  function discardExit(){ const multi=state.plan.some(r=>r.partBreak); if(!multi) lsDel(saveKey(state.scId)); toHomeCourse(); }
+  function toHomeCourse(){ const cid=state.courseId; gameView().classList.add('hidden'); gameView().innerHTML=''; openCourse(cid); }
+  function toHome(){ gameView().classList.add('hidden'); gameView().innerHTML=''; homeView().classList.remove('hidden'); document.getElementById('catalog').scrollIntoView(); }
+
+  /* ---------- chrome ---------- */
+  function decDoneCount(){ // decisions completed before current
+    let n=0; for(let r=0;r<state.roundIndex;r++) n+=state.plan[r].turns.length; n+=state.turnIndex; return n;
+  }
+  function topBar(){
+    const c=state.c; const total=totalDecisions(state.plan);
+    const no=Math.min(decDoneCount()+1,total);
+    const multi=state.plan.some(r=>r.partBreak);
+    const partTxt = multi?`Part ${state.roundIndex+1}/${state.plan.length} · `:'';
+    return `<div class="game-top"><div class="wrap game-top-inner">
+      <div class="left"><button class="exit-btn" onclick="App.exitSim()">← Exit</button>
+        <div class="role-pill"><span class="ic">${c.icon}</span>${esc(c.code)} · ${esc(state.scenario.name)}</div></div>
+      <div class="gt-right">
+        ${hasReference()?`<button class="ref-btn" onclick="App.openReference()"><span>📁</span> Reference</button>`:''}
+        <div class="turn-count">${partTxt}Decision ${no} of ${total}</div>
+      </div>
+    </div></div>`;
+  }
+
+  /* ---------- reference "binder" ---------- */
+  function hasReference(){
+    if(!state) return false;
+    const round=state.plan[state.roundIndex];
+    return (state.sim.reference&&state.sim.reference.length) ||
+           (round&&round.reference&&round.reference.length) ||
+           (state.plan.some(r=>r.partBreak) && state.roundIndex>0);
+  }
+  function renderRefSection(s){
+    let inner='';
+    if(s.body) inner+=s.body.map(p=>`<p>${p}</p>`).join('');
+    if(s.terms) inner+=`<dl class="ref-terms">`+s.terms.map(p=>`<dt>${esc(p[0])}</dt><dd>${esc(p[1])}</dd>`).join('')+`</dl>`;
+    if(s.table) inner+=`<div class="ref-tablewrap"><table class="ref-table"><thead><tr>`+s.table.columns.map(c=>`<th>${esc(c)}</th>`).join('')+`</tr></thead><tbody>`+s.table.rows.map(r=>`<tr>`+r.map(c=>`<td>${esc(c)}</td>`).join('')+`</tr>`).join('')+`</tbody></table></div>`;
+    if(s.list) inner+=`<ul class="ref-list">`+s.list.map(li=>`<li>${esc(li)}</li>`).join('')+`</ul>`;
+    return `<div class="ref-sec"><h4>${esc(s.title)}</h4>${inner}</div>`;
+  }
+  function openReference(){
+    const sim=state.sim; const round=state.plan[state.roundIndex];
+    let secs=[];
+    (sim.reference||[]).forEach(s=>secs.push(s));
+    if(round&&round.reference) round.reference.forEach(s=>secs.push(s));
+    let dyn='';
+    const multi=state.plan.some(r=>r.partBreak);
+    if(multi && state.roundIndex>0){
+      const priorDec=state.decisionLog.filter(d=>d.round<state.roundIndex);
+      const priorRefl=state.reflections.filter(r=>r.round<state.roundIndex && (r.text||'').trim());
+      dyn+=`<div class="ref-sec"><h4>Your story so far</h4>`;
+      if(priorDec.length){ dyn+=`<p>The calls you've made in earlier parts:</p><ul class="ref-list">`+priorDec.slice(-12).map(d=>`<li><strong>${esc(d.title)}</strong> — you chose ${esc(d.key)}: ${esc(d.text)}</li>`).join('')+`</ul>`; }
+      if(priorRefl.length){ dyn+=`<p>Your earlier reflections:</p>`+priorRefl.map(r=>`<blockquote class="ref-quote">${esc(r.text)}</blockquote>`).join(''); }
+      dyn+=`</div>`;
+    }
+    const html=secs.map(renderRefSection).join('')+dyn;
+    modal(`<div class="modal-overlay" onclick="if(event.target===this)App.closeModal()"><div class="modal modal-wide">
+      <div class="ref-head"><h3>📁 Reference — ${esc(state.scenario.name)}</h3><button class="ref-close" onclick="App.closeModal()">Close ✕</button></div>
+      <div class="ref-body">${html||'<p>No reference material for this scenario.</p>'}</div>
+    </div></div>`);
+  }
+  const SEGS=12;
+  function segTrack(v){ const t=tier(v); const f=Math.round(v/100*SEGS); let s='';
+    for(let i=0;i<SEGS;i++) s+=`<span class="seg${i<f?' on':''}"${i<f?` style="background:${t.c}"`:''}></span>`; return `<div class="seg-track">${s}</div>`; }
+  function metersRow(){
+    return `<div class="wrap"><div class="meters">${state.sim.meters.map(m=>{const v=state.meters[m.key];const t=tier(v);
+      return `<div class="meter"><div class="ml"><span>${esc(m.label)}</span><span class="mstat" style="color:${t.c};background:${t.soft}">${t.label} · ${v}</span></div>${segTrack(v)}</div>`;}).join('')}</div></div>`;
+  }
+  function progressTrack(){
+    const total=totalDecisions(state.plan); const done=decDoneCount();
+    let steps=''; let gi=0; const boundaries=[]; let acc=0;
+    state.plan.forEach((r,ri)=>{ acc+=r.turns.length; boundaries.push({at:acc, refl:!!r.reflection, part:r.partBreak && ri<state.plan.length-1}); });
+    for(let i=0;i<total;i++){
+      let cls = i<done?'done':(i===done?'current':'todo');
+      const b=boundaries.find(x=>x.at===i+1);
+      if(b&&b.part) cls+=' part'; else if(b&&b.refl) cls+=' refl';
+      steps+=`<span class="pstep ${cls}"></span>`;
+    }
+    const cur=Math.min(done+1,total);
+    const curRound=state.plan[state.roundIndex];
+    const reflNextNow = (state.turnIndex===curRound.turns.length-1) && curRound.reflection;
+    const right = curRound.partBreak ? `<span class="rf part">Part wrap next</span>`
+                : (reflNextNow?`<span class="rf">Checkpoint next</span>`:(state.plan.some(r=>r.reflection)?`<span class="rf">Checkpoint ahead</span>`:''));
+    return `<div class="prog"><div class="prog-steps">${steps}</div><div class="prog-cap"><span>Step ${cur} / ${total}</span>${right}</div></div>`;
+  }
+
+  /* ---------- intro ---------- */
+  function renderIntro(){
+    const {sim,c,scenario}=state; const multi=state.plan.some(r=>r.partBreak);
+    gameView().innerHTML = topBar() + `<div class="game-main">
+      <div class="scene-card">
+        <div class="scene-head"><div class="scene-tagrow">
+          <span class="scene-kicker">${esc(c.code)} · Briefing</span>
+          <span class="scene-context-tag">${esc(sim.intro.setting)}</span>
+          ${multi?`<span class="scene-context-tag" style="color:var(--accent)">${state.plan.length}-part scenario</span>`:''}
+        </div></div>
+        <h2>${esc(scenario.name)}</h2>
+        <div class="scene-body">${sim.intro.briefing.map(p=>`<p>${p}</p>`).join('')}</div>
+        <div class="consequence"><div class="cq-box">
+          <div class="lbl">Skills this scenario puts to work</div>
+          <div class="comp-earned">${sim.intro.comps.map(x=>`<span class="c">${esc(x)}</span>`).join('')}</div>
+        </div></div>
+        <div class="name-row">
+          <label for="student-name">Your name <span>(appears on the summary you'll submit)</span></label>
+          <input id="student-name" type="text" placeholder="e.g. Jordan Rivera" value="${esc(state.studentName)}" oninput="App._nameInput(this.value)" />
+        </div>
+        <div class="choices">
+          <button class="choice" style="justify-content:center;font-weight:700" onclick="App.beginPlay()">
+            <span class="key">▶</span> ${esc(sim.intro.startLabel||'Begin')}
+          </button>
+        </div>
+      </div>
+    </div>`;
+  }
+  function _nameInput(v){ state.studentName=v; lsSet('dh_student_name', v); }
+  function beginPlay(){ window.scrollTo(0,0); renderRoundIntroOrPlay(); }
+
+  function renderRoundIntroOrPlay(){
+    const r=state.plan[state.roundIndex];
+    const multi=state.plan.some(x=>x.partBreak);
+    if(state.turnIndex===0 && (r.title || r.intro)){
+      gameView().innerHTML = topBar() + metersRow() + `<div class="game-main">${progressTrack()}
+        <div class="scene-card">
+          <div class="scene-head"><div class="scene-tagrow">
+            <span class="scene-kicker">${multi?`Part ${state.roundIndex+1} of ${state.plan.length}`:'Next round'}</span>
+          </div></div>
+          <h2>${esc(r.title||('Part '+(state.roundIndex+1)))}</h2>
+          <div class="scene-body">${(r.intro||[]).map(p=>`<p>${p}</p>`).join('')}</div>
+          <div class="choices"><button class="choice" style="justify-content:center;font-weight:700" onclick="App.renderTurn()"><span class="key">▶</span> ${multi?'Start this part':'Continue'}</button></div>
+        </div></div>`;
+      window.scrollTo(0,0); return;
+    }
+    renderTurn();
+  }
+
+  function renderTurn(){
+    const r=state.plan[state.roundIndex];
+    const t=r.turns[state.turnIndex];
+    checkpoint('play');
+    gameView().innerHTML = topBar() + metersRow() + `<div class="game-main">${progressTrack()}
+      <div class="scene-card">
+        <div class="scene-head"><div class="scene-tagrow">
+          <span class="scene-kicker">${esc(t.kicker)}</span>
+          ${t.contextTag?`<span class="scene-context-tag">${esc(t.contextTag)}</span>`:''}
+        </div></div>
+        <h2>${esc(t.title)}</h2>
+        <div class="scene-body">${t.body.map(p=>`<p>${p}</p>`).join('')}</div>
+        <div class="choices">${t.choices.map((c,i)=>`<button class="choice" onclick="App.choose(${i})"><span class="key">${c.key}</span><span>${esc(c.text)}</span></button>`).join('')}</div>
+      </div></div>`;
+    window.scrollTo(0,0);
+  }
+
+  function choose(i){
+    const r=state.plan[state.roundIndex];
+    const t=r.turns[state.turnIndex];
+    const c=t.choices[i];
+    const applied=[];
+    for(const [k,v] of Object.entries(c.deltas||{})){
+      if(state.meters[k]===undefined) continue;
+      state.meters[k]=clamp(state.meters[k]+v);
+      applied.push({key:k,delta:v,label:(state.sim.meters.find(m=>m.key===k)||{}).label});
+    }
+    (c.comps||[]).forEach(x=>{ if(!state.comps.includes(x)) state.comps.push(x); });
+    if(c.best) state.bestCount++;
+    state.decisionLog.push({round:state.roundIndex, title:t.title, key:c.key, text:c.text, consequence:c.consequence, best:!!c.best});
+    renderConsequence(t,c,applied);
+  }
+  function renderConsequence(t,c,applied){
+    const dh=applied.map(a=>{const cls=a.delta>0?'up':(a.delta<0?'down':'flat');const s=a.delta>0?'+':'';return `<span class="delta ${cls}">${esc(a.label)} ${s}${a.delta}</span>`;}).join('');
+    const ch=(c.comps&&c.comps.length)?`<div class="comp-earned">${c.comps.map(x=>`<span class="c">✓ ${esc(x)}</span>`).join('')}</div>`:'';
+    gameView().innerHTML = topBar()+metersRow()+`<div class="game-main">${progressTrack()}
+      <div class="scene-card">
+        <div class="scene-head"><div class="scene-tagrow"><span class="scene-kicker">${esc(t.kicker)}</span><span class="scene-context-tag">Decision made · ${esc(c.key)}</span></div></div>
+        <h2 style="font-size:21px">${esc(t.title)}</h2>
+        <div class="consequence"><div class="cq-box"><div class="lbl">What happens</div><p>${esc(c.consequence)}</p>${dh?`<div class="deltas">${dh}</div>`:''}${ch}</div></div>
+        <div class="choices"><button class="choice" style="justify-content:center;font-weight:700" onclick="App.advance()"><span class="key">→</span> Continue</button></div>
+      </div></div>`;
+    window.scrollTo(0,0);
+  }
+  function advance(){
+    const r=state.plan[state.roundIndex];
+    state.turnIndex++;
+    if(state.turnIndex < r.turns.length){ return renderTurn(); }
+    // round complete -> reflection (if any) then round end
+    if(r.reflection){ return renderReflection(); }
+    return endRound();
+  }
+
+  /* ---------- reflection ---------- */
+  function renderReflection(){
+    const r=state.plan[state.roundIndex]; const ref=r.reflection; const long=!!ref.long;
+    checkpoint('reflection');
+    const existing=(state.reflections.find(x=>x.round===state.roundIndex)||{}).text||'';
+    gameView().innerHTML = topBar()+metersRow()+`<div class="game-main">${progressTrack()}
+      <div class="scene-card reflect-card">
+        <div class="scene-head"><div class="scene-tagrow"><span class="scene-kicker">${long?'Part reflection':'Reflection checkpoint'}</span><span class="scene-context-tag">${long?'A few sentences — this is graded thinking':'Pause and think it through'}</span></div></div>
+        <div class="reflect-prompt">${esc(ref.prompt)}</div>
+        <textarea class="reflect-input${long?' long':''}" id="refl-input" placeholder="${long?'Write a short paragraph connecting your decisions to the concepts and skills this part covered…':'A sentence or two on why you made the calls you did…'}">${esc(existing)}</textarea>
+        <div class="reflect-note">These notes are saved with your run and appear on the summary you submit.</div>
+        <div class="choices"><button class="choice" style="justify-content:center;font-weight:700" onclick="App.submitReflection()"><span class="key">✓</span> ${long?'Save reflection & continue':'Submit & continue'}</button></div>
+      </div></div>`;
+    window.scrollTo(0,0);
+  }
+  function submitReflection(){
+    const txt=(document.getElementById('refl-input').value||'').trim();
+    const ex=state.reflections.find(x=>x.round===state.roundIndex);
+    const r=state.plan[state.roundIndex];
+    if(ex) ex.text=txt; else state.reflections.push({round:state.roundIndex, prompt:r.reflection.prompt, text:txt});
+    if(txt.length>0) toast('Saved.');
+    endRound();
+  }
+
+  /* ---------- round / part transitions ---------- */
+  function endRound(){
+    const r=state.plan[state.roundIndex];
+    const isLast = state.roundIndex===state.plan.length-1;
+    if(r.partBreak && !isLast){ return renderPartBreak(); }
+    if(isLast){ return finishRun(); }
+    state.roundIndex++; state.turnIndex=0; renderRoundIntroOrPlay();
+  }
+  function renderPartBreak(){
+    const n=state.roundIndex+1; const total=state.plan.length;
+    checkpoint('partbreak');
+    gameView().innerHTML = topBar()+metersRow()+`<div class="game-main">${progressTrack()}
+      <div class="scene-card">
+        <div class="scene-head"><div class="scene-tagrow"><span class="scene-kicker">Part ${n} of ${total} complete</span><span class="scene-context-tag">Progress saved</span></div></div>
+        <h2>Part ${n} wrapped — nice work.</h2>
+        <div class="scene-body"><p>Your decisions and reflection for this part are saved on this computer. You can keep going now, or come back later — the course page will offer <strong>Resume</strong> right where you left off.</p>
+        <p>Switching to a different computer for the next part? Use <strong>Save progress to file</strong>, then load that file on the other machine. You can also download a summary of this part to hand in.</p></div>
+        <div class="choices">
+          <button class="choice" style="justify-content:center;font-weight:700" onclick="App.continuePart()"><span class="key">→</span> Continue to Part ${n+1}</button>
+          <button class="choice" onclick="App.downloadSummary(${state.roundIndex})"><span class="key">⭳</span> Download Part ${n} summary (to submit)</button>
+          <button class="choice" onclick="App.exportProgress()"><span class="key">⇄</span> Save progress to file (for another computer)</button>
+          <button class="choice" onclick="App.saveAndExit()"><span class="key">◌</span> Save &amp; come back later (this computer)</button>
+        </div>
+      </div></div>`;
+    window.scrollTo(0,0);
+  }
+  function continuePart(){ state.roundIndex++; state.turnIndex=0; window.scrollTo(0,0); renderRoundIntroOrPlay(); }
+
+  /* ---------- results ---------- */
+  function finishRun(){
+    state.finished=true; checkpoint('done');
+    const {sim,c,scenario}=state;
+    const total=totalDecisions(state.plan);
+    const quality=Math.round(state.bestCount/total*100);
+    const ending=sim.endings.find(e=>e.test(state.meters))||sim.endings[sim.endings.length-1];
+    const practiced=new Set(state.comps);
+    const scoreTiles=sim.meters.map(m=>{const v=state.meters[m.key];const t=tier(v);
+      return `<div class="score-tile"><div class="big" style="color:${t.c}">${v}</div><div class="lbl">${esc(m.label)}</div><div class="score-status" style="color:${t.c};background:${t.soft}">${t.label}</div></div>`;}).join('');
+    gameView().innerHTML = topBar() + `<div class="results-wrap">
+      <div class="results-hero"><div class="badge">${esc(c.code)} · Debrief</div><h1>${esc(scenario.name)}</h1>
+        <p>${total} decisions and ${state.reflections.length} reflection${state.reflections.length===1?'':'s'} behind you, over about ${fmtDuration(state.elapsedMs)} on the clock. Here's where things stand.</p></div>
+      <div class="ending-card"><h3>${esc(ending.title)}</h3><p style="color:var(--ink-2);font-size:16px">${esc(ending.text)}</p></div>
+      <div class="score-grid">${scoreTiles}</div>
+      <div class="score-grid" style="grid-template-columns:repeat(2,1fr)">
+        <div class="score-tile"><div class="big" style="color:${c.accent}">${quality}%</div><div class="lbl">Sound Calls</div></div>
+        <div class="score-tile"><div class="big" style="color:${c.accent}">${practiced.size}</div><div class="lbl">Skills Drawn On</div></div></div>
+      <div class="results-section-title">Skills your choices drew on</div>
+      <div class="comp-grid">${COMPETENCIES.map(x=>`<span class="comp-pill ${practiced.has(x)?'on':''}">${practiced.has(x)?'✓ ':''}${esc(x)}</span>`).join('')}</div>
+      <p style="font-size:13px;color:var(--muted);margin-top:10px">Solid chips are the skills this run actually exercised. The outlined ones never came into play — a different set of decisions would bring them out.</p>
+      <div class="submit-panel">
+        <div class="submit-txt"><strong>Ready to submit?</strong> Your name, scores, and every reflection, ready to hand in. Copy it straight into an assignment box, or download a formatted file.</div>
+        <div class="submit-btns">
+          <button class="btn btn-primary btn-lg" style="background:${c.accent}" onclick="App.copySummary(null)">⧉ Copy summary to clipboard</button>
+          <button class="btn btn-line btn-lg" onclick="App.downloadSummary(null)">⭳ Download file</button>
+        </div>
+      </div>
+      <div class="results-cta">
+        <button class="btn btn-outline btn-lg" onclick="App.toHomeCourse()">Back to ${esc(c.code)}</button>
+        <button class="btn btn-ghost btn-lg" onclick="App.startScenario('${state.courseId}','${state.scId}',false)">Run it again</button>
+      </div></div>`;
+    window.scrollTo(0,0);
+  }
+
+  /* ---------- submission summary download ---------- */
+  function downloadSummary(uptoRound){
+    rollTime();
+    const {sim,c,scenario}=state;
+    const name=(state.studentName||'').trim()||'(name not entered)';
+    const date=new Date().toLocaleString();
+    const timeSpent=fmtDuration(state.elapsedMs);
+    const isPart = uptoRound!=null;
+    const total=totalDecisions(state.plan);
+    const quality= state.decisionLog.length? Math.round(state.bestCount/Math.max(state.decisionLog.length,1)*100):0;
+    const meterRows=sim.meters.map(m=>{const v=state.meters[m.key];const t=tier(v);
+      return `<tr><td>${esc(m.label)}</td><td style="text-align:right"><b>${v}</b> / 100 — ${t.label}</td></tr>`;}).join('');
+    const reflBlocks = state.reflections
+      .filter(r=> isPart? r.round<=uptoRound : true)
+      .map(r=>`<div class="rb"><div class="rp">${esc(r.prompt)}</div><div class="ra">${esc(r.text)||'<em>(left blank)</em>'}</div></div>`).join('');
+    const logRows = state.decisionLog
+      .filter(d=> isPart? d.round<=uptoRound : true)
+      .map((d,i)=>`<tr><td>${i+1}</td><td>${esc(d.title)}<div class="lc">→ Chose ${esc(d.key)}: ${esc(d.text)}</div></td></tr>`).join('');
+    const scopeLabel = isPart? `Part ${uptoRound+1} of ${state.plan.length}` : 'Complete';
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Submission — ${esc(scenario.name)} — ${esc(name)}</title>
+<style>body{font-family:-apple-system,Segoe UI,Roboto,sans-serif;color:#0f172a;max-width:760px;margin:30px auto;padding:0 24px;line-height:1.5}
+h1{font-size:22px;margin:0 0 4px}h2{font-size:15px;text-transform:uppercase;letter-spacing:.05em;color:#475569;border-bottom:2px solid #e2e8f0;padding-bottom:6px;margin:26px 0 12px}
+.meta{color:#475569;font-size:14px;margin-bottom:4px}.badge{display:inline-block;background:#eef0ff;color:#3730a3;font-weight:700;padding:3px 10px;border-radius:6px;font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:14px}td{padding:7px 4px;border-bottom:1px solid #eef0f3;vertical-align:top}
+.lc{color:#64748b;font-size:13px;margin-top:2px}.rb{margin-bottom:14px}.rp{font-weight:600;font-size:14px}.ra{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px 12px;margin-top:5px;font-size:14px;white-space:pre-wrap}
+.scores b{font-size:15px}.foot{margin-top:30px;color:#94a3b8;font-size:12px;border-top:1px solid #e2e8f0;padding-top:10px}@media print{body{margin:0}}</style></head>
+<body>
+<div class="badge">${esc(c.code)} — ${esc(c.title)}</div>
+<h1 style="margin-top:10px">${esc(scenario.name)}</h1>
+<div class="meta">Student: <b>${esc(name)}</b></div>
+<div class="meta">Scenario length: ${esc(scenario.est)} · ${esc(scopeLabel)}</div>
+<div class="meta">Time spent on this scenario: <b>${esc(timeSpent)}</b>${state.plan.length>1?' (all parts so far)':''}</div>
+<div class="meta">Completed: ${esc(date)}</div>
+<h2>Outcome scores</h2>
+<table class="scores"><tbody>${meterRows}
+<tr><td>Sound calls (best-practice choices)</td><td style="text-align:right"><b>${quality}%</b></td></tr>
+<tr><td>Distinct skills exercised</td><td style="text-align:right"><b>${new Set(state.comps).size}</b> of ${COMPETENCIES.length}</td></tr></tbody></table>
+<h2>Reflections</h2>${reflBlocks||'<em>No reflections recorded.</em>'}
+<h2>Decision record</h2><table><tbody>${logRows}</tbody></table>
+<div class="foot">Generated by the Dr. Henley Simulation Lab. Skills exercised: ${[...new Set(state.comps)].map(esc).join(', ')||'—'}.</div>
+</body></html>`;
+    const safe=(s)=>String(s).replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'');
+    const fname=`Sim-${safe(c.code)}-${safe(scenario.name).slice(0,30)}-${safe(name)||'student'}${isPart?'-part'+(uptoRound+1):''}.html`;
+    try{
+      const blob=new Blob([html],{type:'text/html'});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a'); a.href=url; a.download=fname; document.body.appendChild(a); a.click();
+      setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},500);
+      toast('Summary downloaded.');
+    }catch(e){ toast('Download not supported here — try opening the file in a browser.'); }
+    return html; // also returned for testing
+  }
+
+  /* ---------- plain-text summary for pasting into an LMS ---------- */
+  function buildTextSummary(uptoRound){
+    rollTime();
+    const {sim,c,scenario}=state;
+    const name=(state.studentName||'').trim()||'(name not entered)';
+    const isPart = uptoRound!=null;
+    const quality= state.decisionLog.length? Math.round(state.bestCount/Math.max(state.decisionLog.length,1)*100):0;
+    const L=[];
+    const rule='='.repeat(58);
+    L.push(rule);
+    L.push(`${c.code} — ${c.title}`);
+    L.push(scenario.name);
+    L.push(rule);
+    L.push(`Student: ${name}`);
+    L.push(`Scenario length: ${scenario.est} · ${isPart? 'Part '+(uptoRound+1)+' of '+state.plan.length : 'Complete'}`);
+    L.push(`Time spent: ${fmtDuration(state.elapsedMs)}`);
+    L.push(`Completed: ${new Date().toLocaleString()}`);
+    L.push('');
+    L.push('OUTCOME SCORES');
+    L.push('-'.repeat(58));
+    sim.meters.forEach(m=>{ const v=state.meters[m.key]; L.push(`  ${m.label}: ${v}/100 (${tier(v).label})`); });
+    L.push(`  Sound calls (best-practice choices): ${quality}%`);
+    L.push(`  Distinct skills exercised: ${new Set(state.comps).size} of ${COMPETENCIES.length}`);
+    const skills=[...new Set(state.comps)];
+    L.push(`  Skills drawn on: ${skills.length? skills.join(', ') : '—'}`);
+    L.push('');
+    L.push('REFLECTIONS');
+    L.push('-'.repeat(58));
+    const refl = state.reflections.filter(r=> isPart? r.round<=uptoRound : true);
+    if(!refl.length){ L.push('  (none recorded)'); }
+    refl.forEach((r,i)=>{
+      L.push(`Q${i+1}. ${r.prompt}`);
+      L.push('');
+      L.push((r.text||'').trim()||'(left blank)');
+      L.push('');
+    });
+    L.push('DECISION RECORD');
+    L.push('-'.repeat(58));
+    state.decisionLog.filter(d=> isPart? d.round<=uptoRound : true)
+      .forEach((d,i)=>{ L.push(`${i+1}. ${d.title}`); L.push(`   → Chose ${d.key}: ${d.text}`); });
+    L.push('');
+    L.push(rule);
+    L.push('Generated by the Dr. Henley Simulation Lab.');
+    return L.join('\n');
+  }
+
+  function copySummary(uptoRound){
+    const txt = buildTextSummary(uptoRound);
+    const done = ()=> toast('Summary copied — paste it into your assignment.');
+    const fallback = ()=>{
+      const ta=document.createElement('textarea');
+      ta.value=txt; ta.setAttribute('readonly','');
+      ta.style.position='fixed'; ta.style.top='-1000px';
+      document.body.appendChild(ta); ta.select();
+      let ok=false; try{ ok=document.execCommand('copy'); }catch(e){ ok=false; }
+      document.body.removeChild(ta);
+      if(ok) done(); else showSummaryModal(txt);
+    };
+    if(navigator.clipboard && window.isSecureContext){
+      navigator.clipboard.writeText(txt).then(done).catch(fallback);
+    } else { fallback(); }
+    return txt;
+  }
+
+  function showSummaryModal(txt){
+    modal(`<div class="modal-overlay" onclick="if(event.target===this)App.closeModal()"><div class="modal modal-wide" style="padding:26px">
+        <h3>Copy your summary</h3>
+        <p>Your browser blocked the automatic copy. Select everything below and copy it manually.</p>
+        <textarea readonly style="width:100%;height:300px;font-family:var(--font-mono);font-size:12px;line-height:1.5;padding:10px;border:1px solid var(--line-2);border-radius:10px;resize:vertical">${esc(txt)}</textarea>
+        <div class="actions"><button class="btn btn-primary" onclick="App.closeModal()">Done</button></div>
+      </div></div>`);
+    const ta=document.querySelector('.modal textarea'); if(ta){ ta.focus(); ta.select(); }
+  }
+
+  /* ---------- portable progress file (cross-computer continuity) ---------- */
+  function exportProgress(){
+    if(!state) return;
+    checkpoint(state.phase||'play');           // make sure the latest point is captured
+    const payload = lsGet(saveKey(state.scId)) || {};
+    payload._dhsim = 'progress-v1';
+    payload.courseId = state.courseId; payload.scId = state.scId;
+    payload.scenarioName = state.scenario.name; payload.code = state.c.code;
+    const safe=(s)=>String(s||'').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'');
+    const fname=`Progress-${safe(state.c.code)}-${safe(state.scenario.name).slice(0,28)}-${safe(state.studentName)||'student'}.json`;
+    try{
+      const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a'); a.href=url; a.download=fname; document.body.appendChild(a); a.click();
+      setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},500);
+      toast('Progress file saved. Open it on the other computer with "Load saved progress."');
+    }catch(e){ toast('Could not create the file here.'); }
+    return payload;
+  }
+  function loadProgressPrompt(){ const el=document.getElementById('progress-file'); if(el){ el.value=''; el.click(); } }
+  function handleProgressFile(input){
+    const f = input.files && input.files[0]; if(!f) return;
+    const reader = new FileReader();
+    reader.onload = ()=>{ let d; try{ d=JSON.parse(reader.result); }catch(e){ toast('That file is not a valid progress file.'); return; }
+      input.value=''; _importPayload(d); };
+    reader.onerror = ()=> toast('Could not read that file.');
+    reader.readAsText(f);
+  }
+  function _importPayload(d){
+    if(!d || d._dhsim!=='progress-v1' || !d.scId || !d.courseId){ toast('That does not look like a progress file from this tool.'); return false; }
+    const f = findScenario(d.courseId, d.scId);
+    if(!f){ toast('That progress is for a scenario this version doesn’t have.'); return false; }
+    lsSet(saveKey(d.scId), d);
+    if(d.studentName) lsSet('dh_student_name', d.studentName);
+    toast('Progress loaded.');
+    resumeScenario(d.courseId, d.scId);
+    return true;
+  }
+
+  document.addEventListener('DOMContentLoaded', renderHome);
+
+  return { renderHome, drawCards, go, openCourse, backHome,
+    startScenario, resumeScenario, _begin, _nameInput, beginPlay, renderRoundIntroOrPlay, renderTurn,
+    choose, advance, submitReflection, continuePart, downloadSummary,
+    copySummary, buildTextSummary,
+    exitSim, saveAndExit, discardExit, toHome, toHomeCourse, closeModal,
+    exportProgress, loadProgressPrompt, handleProgressFile, _importPayload,
+    openReference };
+})();
+
+</script>
+</body>
+</html>
