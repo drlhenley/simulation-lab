@@ -421,7 +421,7 @@ const COMPETENCIES = [
 const COURSES = [
   { id:"mat240", code:"MAT 240", role:"Data Analyst", icon:"📈", accent:"#0d9488", soft:"#dcf5f1",
     title:"Applied Statistics", tags:["Inference","Interpretation"],
-    desc:"A pilot program lands on your desk with a borderline result and an executive who wants a yes. Choose the right procedure, check it, and say what the numbers actually support.",
+    desc:"A result lands on your desk, and someone with authority already knows what they want it to mean. Choose the right procedure, check it, and say what the numbers actually support.",
     long:"Applied statistical inference under real pressure: sampling and bias, choosing between procedures, checking conditions, reading confidence intervals and p-values honestly, separating statistical from practical significance, and refusing to turn correlation into cause." },
 ];
 
@@ -709,6 +709,291 @@ const MAT240_PILOT = {
   ]
 };
 
+/* ============================================================
+   MAT 240 - Ridgeline Games launch review
+   Runs after ANOVA and before regression. Spine is the three-group
+   comparison: what a significant F does and does not name.
+   8 decisions, 2 rounds, a reflection checkpoint after each.
+   ============================================================ */
+
+const MAT240_SHIP = {
+  meters: MAT240_METERS,
+
+  intro:{
+    setting:"Ridgeline Games \u00b7 nine days to launch",
+    startLabel:"Open the launch review",
+    briefing:[
+      "You are the only data person at Ridgeline Games, a twelve-person studio in Vermont. The game ships in nine days. Three tutorial designs went through a randomized playtest, the open beta has been running for a month, and there is telemetry from two million sessions sitting in the warehouse.",
+      "Priya runs the studio. She is smart, she is running on four hours of sleep, and she has a publisher call every afternoon. She is not trying to mislead anybody. She is trying to ship, and every number that points toward shipping looks better to her than one that does not. Your job is to be the person in the building who can tell the difference.",
+      "Eight decisions, with a reflection checkpoint halfway through and at the end. There is usually a strongest call, but the point is defensible judgment, not a hunt for the answer key."
+    ],
+    comps:["Procedure Selection","Interpreting Uncertainty","Practical Significance","Causal Reasoning"]
+  },
+
+  reference: [
+    { title:"Studio brief - Ridgeline Games",
+      body:[
+        "Ridgeline Games is a twelve-person studio in Vermont. Their game ships in nine days. You are the studio's only data person, which means you are also the only person in the building who can say whether a number means what someone wants it to mean.",
+        "Priya runs the studio. She is sharp, she is exhausted, and she has a publisher call every afternoon. She is not trying to mislead anyone. She is trying to ship, and every number that supports shipping looks better to her than one that does not."
+      ] },
+
+    { title:"The tutorial playtest",
+      body:["Thirty playtesters were randomly assigned to one of three tutorial designs. Completion time was recorded in minutes."],
+      table:{ columns:["Tutorial","n","Mean completion (min)","Std. dev."], rows:[
+        ["A - guided walkthrough","10","8.51","0.6027"],
+        ["B - full cinematic","10","11.52","0.5978"],
+        ["C - learn by doing","10","8.13","0.5716"],
+      ]} },
+
+    { title:"Results you have already computed",
+      table:{ columns:["Quantity","Value"], rows:[
+        ["ANOVA across the three tutorials","F = 98.81, df 2 and 27"],
+        ["ANOVA p-value","0.00000000000038"],
+        ["F crit at alpha = 0.05","3.3541"],
+        ["Largest SD / smallest SD","1.0543"],
+        ["Tutorial A vs C, on their own","t = 1.4466, df 17.95, p = 0.1652"],
+        ["Tutorial completion rate","321 of 412 = 77.91%"],
+        ["95% CI for completion rate","73.91% to 81.92%"],
+        ["Day-7 retention, new vs old tutorial","47.00% (329/700) vs 42.00% (294/700)"],
+        ["Two-proportion test p-value","0.0598"],
+        ["95% CI for the retention difference","-0.2 to +10.2 percentage points"],
+        ["Mean session length, new vs old","21.40 vs 21.32 minutes"],
+        ["Session length difference","0.08 min = 4.8 seconds, p = 0.000035"],
+        ["95% CI for the session difference","2.5 to 7.1 seconds"],
+        ["Correlation, tutorial completion vs spend","r = 0.68"],
+      ]} },
+
+    { title:"Choosing a procedure",
+      body:[
+        "Three or more group means, one question about all of them: ANOVA, single factor. Not a t test on every pair.",
+        "Two independent group means: two-sample t.",
+        "One proportion against a stated target: one-proportion z. The TEST uses the target value in the standard error; the INTERVAL uses the sample proportion.",
+        "Two proportions compared: two-proportion z. The test pools; an interval on the difference does not.",
+        "Two numerical variables measured on the same units: correlation and regression - and neither one establishes cause."
+      ] },
+
+    { title:"Conditions worth checking",
+      body:[
+        "ANOVA: independent groups, roughly normal within each group, and similar spreads - largest SD over smallest under about 2.",
+        "Proportions: random sample, at least 10 successes AND 10 failures, sample under 10% of the population.",
+        "Means: random sample, and either n at least 30 or data that look roughly symmetric with no strong outliers.",
+        "A condition that fails is not a hurdle to argue past. It is the procedure telling you it cannot answer this question with this data."
+      ] },
+
+    { title:"Excel functions",
+      table:{ columns:["Want","Formula"], rows:[
+        ["ANOVA","Data > Data Analysis > ANOVA: Single Factor"],
+        ["ANOVA p-value by hand","=F.DIST.RT(F, df_between, df_within)"],
+        ["Group summaries","=AVERAGE(range)   =STDEV.S(range)"],
+        ["One-proportion interval SE","=SQRT(phat*(1-phat)/n)"],
+        ["One-proportion test SE","=SQRT(p0*(1-p0)/n)"],
+        ["Two-proportion test SE","=SQRT(pp*(1-pp)*(1/n1+1/n2))"],
+        ["Difference of means SE","=SQRT(s1^2/n1 + s2^2/n2)"],
+        ["z and t p-values","=2*(1-NORM.S.DIST(ABS(z),TRUE))   =T.DIST.2T(ABS(t),df)"],
+      ]} },
+
+    { title:"Key terms",
+      body:[
+        "Family-wise error rate - the chance of at least one false positive across a set of tests. Three tests at 5% each carry about 14%, not 5%.",
+        "Practical significance - whether an effect is large enough to matter. Statistical significance says only that it is distinguishable from zero.",
+        "Confounding variable - something that influences both variables in a relationship, manufacturing an association that is real but not causal.",
+        "Post hoc comparison - a follow-up procedure such as Tukey that identifies which specific groups differ, while controlling the error rate across all the comparisons."
+      ] },
+  ],
+
+  rounds:[
+    /* ---------------- ROUND 1 : Before the build review ---------------- */
+    { reflection:{ prompt:"Across these four decisions you chose which players to trust, picked a procedure for three groups, decided what a significant result actually named, and drew a line on a sample too small to answer the question. Pick the decision where saying the careful thing was hardest, and explain in your own words what would have gone wrong nine days from now if you had said the easy thing instead." },
+      turns:[
+
+        { kicker:"The Playtest Pool", contextTag:"Study design",
+          title:"The Discord poll says Tutorial C is the favourite. Priya wants to close the question.",
+          body:[
+            "The community manager posted a poll in the studio's Discord. 1,430 people voted and 71% picked Tutorial C as the one they would want. Priya reads that as settled, and it would save two days.",
+            "The Discord is the studio's most engaged fans, most of whom have played every previous Ridgeline title. You also have the randomized playtest with thirty testers who had never seen the game."
+          ],
+          choices:[
+            { key:"A", text:"Set the poll aside as evidence about the tutorial and build the recommendation on the randomized playtest.", best:true,
+              consequence:"The Discord poll samples people who already love this studio's games and have played its previous ones. They are the players least likely to need a tutorial at all, which makes them the worst possible judges of one. Worse, they voted on which tutorial they would PREFER, not which one taught them anything. The playtest measured a real outcome on people who arrived cold, and thirty randomized testers beat 1,430 self-selected ones on the only question that matters.",
+              deltas:{validity:+15,trust:+6,decision:+12}, comps:["Study Design","Statistical Communication"] },
+            { key:"B", text:"Lead with the poll. 1,430 responses is a far bigger sample than thirty playtesters.",
+              consequence:"Sample size does not repair a sampling frame. Every one of those 1,430 people opted into a fan Discord and then opted again into answering, and the tutorial exists for players who are nothing like them. A bigger biased sample is a more precise estimate of the wrong number, and this one is measuring preference among experts rather than learning among beginners.",
+              deltas:{validity:-14,trust:+3,decision:-10}, comps:[] },
+            { key:"C", text:"Report both, note the poll is self-selected, and let Priya weigh them.",
+              consequence:"Honest, and better than leading with the poll. But handing a decision maker two numbers and a caveat usually means she keeps the one she liked and remembers that you had reservations. Naming which evidence answers the question is part of the job, not an overstep.",
+              deltas:{validity:+5,trust:+2,decision:+2}, comps:["Statistical Communication"] },
+            { key:"D", text:"Rerun the poll to a random sample of players outside the Discord before deciding anything.",
+              consequence:"Methodologically the cleanest instinct in the room, and there is no time. The game ships in nine days and fielding a new survey burns three of them. The randomized playtest already sitting on your drive was built to answer exactly this, which makes the delay expensive and unnecessary.",
+              deltas:{validity:+6,trust:-6,decision:-4}, comps:["Study Design"] },
+          ]},
+
+        { kicker:"Three Tutorials", contextTag:"Procedure selection",
+          title:"Three designs, thirty testers, one question: do the tutorials differ?",
+          body:[
+            "Completion times are in front of you. Tutorial A averaged 8.51 minutes, B averaged 11.52, C averaged 8.13. The standard deviations are close together - the largest over the smallest is 1.0543.",
+            "The intern has already opened Excel and is asking which test to run."
+          ],
+          choices:[
+            { key:"A", text:"One ANOVA across all three groups.", best:true,
+              consequence:"One question about three group means is one test. ANOVA compares the variation between the tutorial means to the variation within each tutorial, and answers whether any of them differ - once, at one significance level. The similar-spread condition passes comfortably at 1.0543, well under 2, and random assignment handles independence. F comes back at 98.81 on 2 and 27 degrees of freedom.",
+              deltas:{validity:+16,decision:+10}, comps:["Procedure Selection","Checking Conditions"] },
+            { key:"B", text:"Three two-sample t tests: A vs B, A vs C, B vs C.",
+              consequence:"Three tests at 5% each do not add up to a 5% error rate. The chance of at least one false positive climbs to about 14%, and you would have spent it to learn something one ANOVA answers cleanly. This is the exact situation the procedure was invented for, and running the pairwise tests first is how people end up defending a difference that was never there.",
+              deltas:{validity:-12,decision:-8}, comps:[] },
+            { key:"C", text:"Compare only B against the average of A and C, since B is the obvious outlier.",
+              consequence:"Choosing the comparison after looking at which means are far apart is picking the test to fit the answer. It inflates the error rate invisibly, because the selection step never appears in the arithmetic. If a specific contrast mattered, it had to be specified before the data came in.",
+              deltas:{validity:-15,decision:-6}, comps:[] },
+            { key:"D", text:"ANOVA, and if it is significant, follow up with post hoc comparisons.", best:true,
+              consequence:"This is the full correct shape and it names the second step out loud. ANOVA first, and only if it rejects does it make sense to ask which pairs differ - using Tukey or Bonferroni, which control the error rate across the whole set rather than pretending each comparison is the only one. Naming the follow-up now sets up the conversation you are about to have with Priya.",
+              deltas:{validity:+16,trust:+4,decision:+12}, comps:["Procedure Selection","Causal Reasoning"] },
+          ]},
+
+        { kicker:"Ship C", contextTag:"What a significant F establishes",
+          title:"F = 98.81, p is essentially zero. Priya says: C is fastest, ship C.",
+          body:[
+            "The ANOVA rejects decisively. C has the lowest mean completion time at 8.13 minutes, A is at 8.51, and B is far behind at 11.52.",
+            "You also ran A against C on their own, before Priya walked over: t = 1.4466, p = 0.1652."
+          ],
+          choices:[
+            { key:"A", text:"Tell her the F test says at least one tutorial differs, and that A vs C on its own comes back at p = 0.1652 - so the data does not separate them.", best:true,
+              consequence:"This is the whole lesson in one sentence. A significant F establishes that the three tutorials are not all the same; it names no winner. What is driving that enormous F is B, which is three minutes slower than either of the others. Between A and C the data cannot tell the difference, and reading C as the winner because its sample mean came out 0.38 minutes lower is reading noise as a result.",
+              deltas:{validity:+18,trust:+8,decision:+14}, comps:["Interpreting Uncertainty","Statistical Communication"] },
+            { key:"B", text:"Agree. C had the lowest mean and the test was significant, so the evidence supports C.",
+              consequence:"The test was significant about something the test was not asked. F compares all three at once and the difference it found is B against the field. Attaching that significance to C specifically is the multiple comparisons problem walking back in through the door ANOVA was holding shut, and a 0.38-minute gap on ten testers per group is well inside what chance produces.",
+              deltas:{validity:-16,trust:+4,decision:-12}, comps:[] },
+            { key:"C", text:"Say the test cannot name a winner and recommend choosing between A and C on other grounds - build cost, art time, accessibility.",
+              consequence:"Correct on the statistics and genuinely useful. The data has ruled out B and cannot separate A from C, which means the decision moves to criteria the data does not cover, and saying so hands Priya something she can act on today. Slightly stronger if you also give her the p = 0.1652 so she can see why, rather than taking it on faith.",
+              deltas:{validity:+14,trust:+9,decision:+11}, comps:["Statistical Communication","Decision Support"] },
+            { key:"D", text:"Run Tukey comparisons on all three pairs and bring back which ones actually differ.",
+              consequence:"This is the textbook follow-up and it will confirm what you already suspect: B differs from both, A and C do not differ from each other. It costs twenty minutes you have, so it is a defensible call. The only cost is that Priya is standing at your desk right now wanting an answer, and you already have enough to give her the honest version of one.",
+              deltas:{validity:+12,trust:-2,decision:+8}, comps:["Procedure Selection","Excel Fluency"] },
+          ]},
+
+        { kicker:"The Handheld Question", contextTag:"Checking conditions",
+          title:"She wants the tutorial result broken out for the nine handheld testers.",
+          body:[
+            "Nine of the thirty playtesters played on a handheld. Priya suspects the tutorial reads badly on a small screen and wants that number for the publisher call.",
+            "Split three ways by tutorial, that is three testers per group."
+          ],
+          choices:[
+            { key:"A", text:"Say the handheld group is too small to support a comparison, and offer to run a proper handheld playtest next week.", best:true,
+              consequence:"Three testers per tutorial cannot support an ANOVA, a t test, or a defensible eyeball. Any number you produce would be almost entirely noise, and because it would carry the same decimal places as the real result nobody downstream would treat it differently. Naming the limit and offering the study that could answer it is the only version of this that helps her.",
+              deltas:{validity:+16,trust:+5,decision:+10}, comps:["Checking Conditions","Ethical Judgment"] },
+            { key:"B", text:"Run the ANOVA on the nine and report it with a note that the sample is small.",
+              consequence:"The note will not survive the slide. It never does. Once a number exists it travels, and a caveat in eight-point type does not stop a publisher from repeating a figure built on three testers per group. The conditions do not hold, which means the procedure is not producing a weak answer - it is not producing an answer.",
+              deltas:{validity:-15,decision:-8}, comps:[] },
+            { key:"C", text:"Report the nine handheld completion times as raw data with no test, and say plainly that no comparison is possible.",
+              consequence:"Reasonable and honest. Showing the raw times lets Priya see the texture without a procedure pretending to more than it has, and refusing the comparison outright is the right call. Just be sure the raw numbers are not presented in a way that invites the eye to do the test you declined to run.",
+              deltas:{validity:+11,trust:+4,decision:+6}, comps:["Checking Conditions","Statistical Communication"] },
+            { key:"D", text:"Pool the handheld testers across tutorials and compare them to the desktop testers instead.",
+              consequence:"This changes the question, and it is a better-posed one - nine against twenty-one is still thin but no longer absurd. Worth offering. It does not answer what Priya asked, though, so say clearly that you have swapped the question rather than letting the swap go unnoticed.",
+              deltas:{validity:+7,trust:+2,decision:+3}, comps:["Procedure Selection"] },
+          ]},
+      ]},
+
+    /* ---------------- ROUND 2 : Launch week ---------------- */
+    { reflection:{ prompt:"These four decisions each involved a number that was technically correct and rhetorically misleading - a target cleared, a p-value just above the line, an effect too small to feel, and a correlation with a story attached. Choose the one you found hardest to state honestly, and explain what the honest version cost and why it was worth paying." },
+      turns:[
+
+        { kicker:"The Completion Target", contextTag:"Estimation",
+          title:"77.91% finished the tutorial. The internal target was 70%.",
+          body:[
+            "321 of 412 open beta players completed the tutorial. Priya wants a slide that says the tutorial beat its target.",
+            "She asks whether you should show the percentage or 'do the statistics thing' to it."
+          ],
+          choices:[
+            { key:"A", text:"Report the interval: 77.91%, with a 95% confidence interval of 73.91% to 81.92%, which sits entirely above the 70% target.", best:true,
+              consequence:"The interval answers the question better than a test does, because it reports how much the tutorial beat the target and not merely that it did. Every value in it clears 70%, so the target question resolves itself without a separate hypothesis test, and Priya gets a range she can defend if the publisher pushes on precision.",
+              deltas:{validity:+15,trust:+8,decision:+12}, comps:["Estimation & Intervals","Statistical Communication"] },
+            { key:"B", text:"Just show 77.91%. It is the actual number and it is above 70%.",
+              consequence:"It is the actual number for these 412 players. On a different 412 it would land somewhere else, and the slide gives no hint of how much else. Reporting a point estimate with no interval to a publisher is how a figure gets treated as exact and then gets quoted back at you when the live number comes in at 74%.",
+              deltas:{validity:-8,decision:-5}, comps:[] },
+            { key:"C", text:"Run the one-proportion test against 0.70 and report z and the p-value.",
+              consequence:"Correct arithmetic - z = 3.5048, p = 0.0005 - and it does establish the target was cleared. It answers the smaller question, though. Priya and the publisher care how far above 70% the tutorial landed, and a p-value cannot tell them. The interval carries the test's answer inside it and adds the magnitude for free.",
+              deltas:{validity:+8,decision:+4}, comps:["Hypothesis Testing"] },
+            { key:"D", text:"Report the interval and note it uses the sample proportion in the standard error, while a test against 70% would use 0.70.", best:true,
+              consequence:"This is the interval answer plus the piece most people get wrong. The interval has no hypothesized value to work from, so it uses what the sample gives it; a test assumes the target is true and builds its standard error from 0.70. Different jobs, different numbers - 0.0204 against 0.0226 here - and knowing which is which is what keeps the two from being mixed on a slide.",
+              deltas:{validity:+16,trust:+6,decision:+11}, comps:["Estimation & Intervals","Procedure Selection"] },
+          ]},
+
+        { kicker:"The Retention Slide", contextTag:"Interpreting uncertainty",
+          title:"Day-7 retention is up five points. p = 0.0598. The publisher call is tomorrow.",
+          body:[
+            "47.00% of players on the new tutorial came back on day seven, against 42.00% on the old one - 329 of 700 versus 294 of 700. The two-proportion test gives p = 0.0598. The 95% confidence interval for the difference runs from -0.2 to +10.2 percentage points.",
+            "Priya points out that 0.0598 rounds to 0.06, and that alpha is a convention rather than a law."
+          ],
+          choices:[
+            { key:"A", text:"Report it as suggestive but not established, give the interval, and say what a larger sample would settle.", best:true,
+              consequence:"She is right that 0.05 is a convention, and that is exactly why you do not move it after seeing the data. The interval is the honest picture: the difference is probably positive, might be as large as ten points, and might be nothing. Saying that plainly and naming the sample size that would resolve it gives her something real to bring to the call, which a p-value on either side of an arbitrary line does not.",
+              deltas:{validity:+17,trust:+7,decision:+13}, comps:["Interpreting Uncertainty","Ethical Judgment"] },
+            { key:"B", text:"Call it significant. 0.0598 is close enough and the direction is clear.",
+              consequence:"Alpha is a convention, but it is a convention chosen before the analysis so that the analyst cannot choose it afterward. Moving it once you know which side your result landed on removes the only thing that made it meaningful. The direction being clear is not the claim - the claim is that the data can distinguish this difference from zero, and at this sample size it cannot.",
+              deltas:{validity:-17,trust:+5,decision:-11}, comps:[] },
+            { key:"C", text:"Report p = 0.0598 with no interpretation and let the publisher decide what it means.",
+              consequence:"Technically complete and practically useless. A bare p-value handed to a non-statistician gets rounded, compared to 0.05, and converted into a yes or a no by someone with less context than you have. Declining to interpret is not neutrality; it just moves the interpretation to whoever is least equipped to do it.",
+              deltas:{validity:+3,trust:-5,decision:-6}, comps:[] },
+            { key:"D", text:"Note that the interval contains zero, which is the same information as failing to reject, and lead with that.", best:true,
+              consequence:"Exactly right, and it is the version that survives a hostile question. The interval running from -0.2 to +10.2 contains zero, which is why the test does not reject - two readings of one fact rather than two competing findings. Showing that they agree is also the cheapest error check you have on your own arithmetic.",
+              deltas:{validity:+16,trust:+6,decision:+11}, comps:["Interpreting Uncertainty","Statistical Communication"] },
+          ]},
+
+        { kicker:"Four Point Eight Seconds", contextTag:"Practical significance",
+          title:"Average session length is up 4.8 seconds across 2.1 million sessions, and p = 0.000035.",
+          body:[
+            "Sessions on the new tutorial average 21.40 minutes against 21.32 on the old one. With over a million sessions in each arm the test is decisive: p = 0.000035, and the 95% confidence interval runs from 2.5 to 7.1 seconds.",
+            "Priya wants it on the slide as evidence the tutorial improves engagement."
+          ],
+          choices:[
+            { key:"A", text:"Report it accurately and say plainly that 4.8 seconds on a 21-minute session is not an engagement result anyone will feel.", best:true,
+              consequence:"The p-value is real and it is answering a question nobody asked. With a million sessions per arm, a difference of essentially nothing becomes statistically detectable, and the interval proves the point rather than hiding it - the entire plausible range, 2.5 to 7.1 seconds, is too small to matter. Statistical significance measures detectability. Practical significance is a separate judgment and it is yours to make out loud.",
+              deltas:{validity:+16,trust:+6,decision:+13}, comps:["Practical Significance","Statistical Communication"] },
+            { key:"B", text:"Put it on the slide. p = 0.000035 is the strongest result in the deck.",
+              consequence:"It is the strongest-looking result and the weakest real one. A p-value under 0.0001 sitting beside a number labelled 'session length' reads as important to everyone in that call, and you know it will. Reporting correctly while knowing it will be misread is only half the job; the other half is saying what the number is worth.",
+              deltas:{validity:-13,trust:+4,decision:-10}, comps:[] },
+            { key:"C", text:"Leave it out of the deck entirely.",
+              consequence:"Defensible - it does not support the claim being made of it, and cutting a slide is cheaper than defending one. The risk is that the metric exists in the telemetry dashboard and someone finds it later, in which case having omitted it looks worse than having explained it. Including it with an honest size makes the same point and cannot be discovered against you.",
+              deltas:{validity:+6,trust:-3,decision:+2}, comps:["Ethical Judgment"] },
+            { key:"D", text:"Show the interval in seconds rather than the p-value, so the size speaks for itself.", best:true,
+              consequence:"The best rhetorical move available. '2.5 to 7.1 seconds' cannot be misread as important, whereas 'p < 0.0001' cannot be read as anything else. Choosing the representation that makes the magnitude visible is not spin - it is the difference between reporting a result and reporting an impression of one.",
+              deltas:{validity:+15,trust:+8,decision:+12}, comps:["Practical Significance","Statistical Communication"] },
+          ]},
+
+        { kicker:"The Trailer Stat", contextTag:"Correlation and causation",
+          title:"Players who finish the tutorial spend more, r = 0.68. Priya wants it in the launch trailer.",
+          body:[
+            "Across the beta population, tutorial completion and in-game spending correlate at r = 0.68. Marketing has drafted a line for the trailer: finish the tutorial and spend 68% more.",
+            "You also know that players who finish tutorials are, as a group, the players who were most interested in the game before they installed it."
+          ],
+          choices:[
+            { key:"A", text:"Report the association, name prior engagement as the confounder, and point back to the randomized playtest as the real evidence.", best:true,
+              consequence:"Players who bother to finish a tutorial are already the ones who intended to stay, and intent drives both the completion and the spending. The correlation is real and the causal reading of it is manufactured almost entirely by who selected into each group. The randomized playtest is the only thing you have that assigned the tutorial rather than observing who chose it, and steering the claim back there is the whole job.",
+              deltas:{validity:+18,trust:+10,decision:+14}, comps:["Causal Reasoning","Ethical Judgment","Statistical Communication"] },
+            { key:"B", text:"Approve the line. r = 0.68 is strong and the relationship is in the data.",
+              consequence:"The relationship is in the data and the claim is not. 'Finish the tutorial and spend 68% more' also misstates r, which is not a percentage of anything - r = 0.68 means about 46% of the variation in spending tracks with completion, which is a different sentence entirely. A trailer claim is a public one, and this one is wrong twice.",
+              deltas:{validity:-18,trust:-8,decision:-12}, comps:[] },
+            { key:"C", text:"Fix the wording so it describes an association rather than an effect, and let it run.",
+              consequence:"An improvement, and the misstatement of r gets caught. But an association framed carefully in a trailer still lands as a promise on everyone who watches it, because that is what trailers are for. The wording is not really the problem; the venue is.",
+              deltas:{validity:+7,trust:+2,decision:+2}, comps:["Statistical Communication"] },
+            { key:"D", text:"Say no to the trailer line, and offer marketing the playtest completion-time result instead.",
+              consequence:"Refusing is right and offering a replacement is what makes the refusal land. The playtest result is defensible, it came from random assignment, and it is genuinely good news about the tutorial. Slightly stronger still if you also explain the confounding, so the next drafted line does not repeat the mistake.",
+              deltas:{validity:+14,trust:+6,decision:+10}, comps:["Causal Reasoning","Decision Support"] },
+          ]},
+      ]},
+  ],
+
+  endings:[
+    { test:(m)=> m.validity>=75 && m.trust>=68 && m.decision>=70,
+      title:"Shipped Clean",
+      text:"The game shipped and the claims around it held. Nothing in the launch deck has to be walked back, the publisher heard a number for the tutorial that will still be true in March, and the trailer says something the data can carry. What made it work was not that the results were good, because two of them were not. It was that at each point where a technically-correct number was about to be asked to mean more than it did, you said what it was actually worth and gave Priya something usable in its place." },
+    { test:(m)=> m.validity>=60 && m.decision>=55,
+      title:"Shipped, With One Slide You Would Rewrite",
+      text:"The analysis holds up and the recommendation was sound. A couple of calls gave more ground than they needed to - somewhere a number went out framed the way it was wanted rather than the way it was true. Read back your own reasoning on the decisions where you hedged. The pattern almost always shows up in the same place: where the honest phrasing was less satisfying than the one being asked for, and the discipline had to come from you rather than from the arithmetic." },
+    { test:()=> true,
+      title:"The Slide That Comes Back",
+      text:"Several calls in this run let the wanted conclusion pick the method, the threshold, or the framing. None of it is unusual, all of it is recoverable, and that is what a simulation is for. Look at where statistical validity dropped and check whether those moments share a shape: a significant F read as naming a winner, a threshold nudged after seeing which side the result fell on, a correlation promoted to a cause because someone needed it to be one. Statistics does not fail loudly in a room like this. It fails one reasonable-sounding sentence at a time, and every one of them was defensible when it was said." },
+  ],
+};
+
 const SCENARIOS = {
   mat240: {
     short: [
@@ -716,6 +1001,10 @@ const SCENARIOS = {
         topics:["Procedure choice","Intervals & p-values","Practical significance","Causation"],
         blurb:"A borderline pilot result, an executive who has already promised the board it worked, and eight chances to say something true. Cumulative over inference and regression.",
         sim: MAT240_PILOT },
+      { id:"mat240-ship", name:"Ship It", est:"~30 min",
+        topics:["ANOVA","What a significant F names","Practical significance","Causation"],
+        blurb:"A studio nine days from launch, three tutorial designs, and a founder who reads every result as a green light. Built to run after ANOVA and before regression.",
+        sim: MAT240_SHIP },
     ],
     hour: [],
     course: [],
