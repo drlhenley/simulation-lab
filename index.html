@@ -996,11 +996,13 @@ const MAT240_SHIP = {
 
 /* ============================================================
    MAT 240 - Maple Hollow Harvest Festival ("The Great Pie Off")
-   Runs after ANOVA, before regression - the class before
-   Thanksgiving break. Practice on what came after Exam 2:
-   inference from raw data and one-way ANOVA. All numbers come
-   from the Excel Calculator Files. Built to be light: 6 decisions,
-   2 rounds of 3, a one-line reflection after each round, ~20 min.
+   The class before Thanksgiving break, after ANOVA and before
+   regression. Practice on everything since Exam 2: inference from
+   raw data and one-way ANOVA. Students run most of it themselves on
+   the Excel Calculator Files from the Pie Off data workbook; a few
+   decisions hand them the values and ask for judgment.
+   12 decisions, 3 rounds of 4, a short reflection after each round.
+   Built for about 45 minutes.
    ============================================================ */
 
 const MAT240_PIE = {
@@ -1010,219 +1012,316 @@ const MAT240_PIE = {
     setting:"Maple Hollow Harvest Festival · the weekend before Thanksgiving",
     startLabel:"Grab a clipboard",
     briefing:[
-      "You volunteered to be the data person for the Maple Hollow Harvest Festival: hot cider, a pie contest, a heated vendor tent and four live bands. The weekend is over, the spreadsheets are full, and the festival committee meets Monday to plan next year.",
-      "Rosa chairs the committee. She is cheerful, decisive and very fond of banners. She is not trying to fudge anything; she just likes good news, and every number that sounds like good news looks right to her. Your job is to tell her what the numbers actually say.",
-      "Six decisions, a one-line reflection after each set of three. Everything is already computed on the Excel Calculator Files and sitting in the binder. The hard part is choosing which number answers the question."
+      "You volunteered to be the data person for the Maple Hollow Harvest Festival: a hot cider stand, a come-back survey, a new heated vendor tent, a pie contest and four bands. The festival committee meets Monday to plan next year, and the spreadsheets are on your desk.",
+      "Rosa chairs the committee. She is cheerful, decisive and very fond of banners. She is not trying to fudge anything; she just likes good news, and every number that sounds like good news looks right to her. Your job is to run the numbers and tell her what they actually say.",
+      "Before you start: open the Excel Calculator Files and the Great Pie Off data workbook from Brightspace. Most decisions ask you to run the data yourself and pick the answer that matches what you get; a few hand you the numbers. The raw data are also at the end of the Reference binder. Twelve decisions in three rounds, with a short reflection after each round."
     ],
-    comps:["Procedure Selection","Hypothesis Testing","Interpreting Uncertainty","Statistical Communication"]
+    comps:["Excel Fluency","Procedure Selection","Hypothesis Testing","Interpreting Uncertainty"]
   },
 
   reference: [
-    { title:"Festival brief",
+    { title:"How this run works",
       body:[
-        "Maple Hollow's Harvest Festival ran Saturday and Sunday on two weekends. Volunteers timed customers at the cider stand, the same twelve vendors sold outdoors one weekend and in a new heated tent the next, festival-goers were randomly handed a pie slice to rate, and four bands played the main stage.",
-        "Rosa chairs the committee. She wants next year's plan, and a banner, by Monday."
+        "Decisions marked RUN IT need you to paste data into a Calculator file and read the result. Do the work before you look at the choices; the wrong answers are the numbers people get from common slips.",
+        "Decisions marked JUDGMENT give you the numbers. Your job is to say what they support.",
+        "Keep the Calculator Files open the whole time. Round to four decimal places when you compare."
       ] },
-
-    { title:"Cider stand results",
-      body:["Volunteers timed 40 randomly chosen customers at the hot cider stand, in minutes."],
-      table:{ columns:["Calculator file, tab and cell","Value"], rows:[
-        ["Confidence Intervals, Conf_Int_unknown_P_sd find mean: B2 mean","4.585 min"],
-        ["Same tab: C2 standard deviation (STDEV.S)","1.4866 min"],
-        ["=STDEV.P on the same column (not a Calculator tab)","1.4679 min"],
-        ["Hypothesis Testing, Pop_mean_unknow_pop_sd, row 3: E3 t","-1.7655"],
-        ["F3 - left tail (less than)","0.0427"],
-        ["G3 - right tail (greater than)","0.9573"],
-        ["H3 - two tail (not equal)","0.0853"],
-      ]} },
-
-    { title:"Heated tent results",
-      body:["The same 12 vendors' sales, in hundreds of dollars: weekend 1 outdoors, weekend 2 in the heated tent. Averages 18.10 and 19.47; 11 of 12 vendors sold more in the tent."],
-      table:{ columns:["Calculator file, tab and cell","Value"], rows:[
-        ["2 populations, Matched Sample HypTest: E2 mean difference","1.3667 ($100s)"],
-        ["Same tab: I2 t;  M2 two-tail p","5.3214;  0.0002"],
-        ["2 populations, Independent Samples Hyp Test: D3 t","0.9075"],
-        ["Same tab: I3 two-tail p","0.3744"],
-      ]} },
-
-    { title:"Pie contest results",
-      body:["45 festival-goers were randomly handed apple, pumpkin or pecan, 15 per pie, and rated it from 1 to 10."],
-      table:{ columns:["Calculator file, tab and cell","Value"], rows:[
-        ["One-Way ANOVA, tab ANOVA: column I group means","apple 6.05,  pumpkin 7.45,  pecan 7.19"],
-        ["X3 F;  Y3 p-value","6.00;  0.0051"],
-        ["Pumpkin vs pecan alone - 2 populations, Independent Samples Hyp Test: I3","0.5445"],
-      ]} },
-
-    { title:"Band results",
-      body:["Spend per visitor during each band's set, 12 visitors per band."],
-      table:{ columns:["Calculator file, tab and cell","Value"], rows:[
-        ["One-Way ANOVA, tab ANOVA: column I group means","$26.30,  $27.66,  $24.79,  $28.54"],
-        ["X3 F;  Y3 p-value","0.86;  0.4669"],
-      ]} },
-
     { title:"Which Calculator tab?",
       body:[
-        "One numerical column, mean and SD: Confidence Intervals file, Conf_Int_unknown_P_sd find mean. It uses STDEV.S, the sample standard deviation.",
-        "One mean against a claim: Hypothesis Testing file, Pop_mean_unknow_pop_sd. F3 is the left tail (less than), G3 the right tail (greater than), H3 two-tail (not equal).",
-        "The same subjects measured twice: 2 populations file, Matched Sample tabs. The test runs on each subject's difference.",
+        "Mean and SD of one column, and an interval for the mean: Confidence Intervals file, Conf_Int_unknown_P_sd find mean. Paste the column from A2; D2 is n, E2 the confidence level as a decimal. B2 mean, C2 s, H2 and I2 the limits.",
+        "One mean against a claim: Hypothesis Testing file, Pop_mean_unknow_pop_sd, row 3. A3 x̄, B3 μ₀, C3 s, D3 n. E3 t; F3 left tail (less than), G3 right tail (greater than), H3 two-tail (not equal).",
+        "A count from a Yes/No column: =COUNTIF(range,\"Yes\") gives x; divide by n for p̂.",
+        "One proportion interval: Confidence Intervals file, Conf_Int_Proportion. A2 p̂, B2 n, C2 level; G2 and H2 the limits.",
+        "Same subjects measured twice: 2 populations file, Matched Sample HypTest and Matched Sample Conf Int. Paste one column into B and the other into C from row 2; D2 holds =B2-C2, fill it down. G2 is n.",
         "Two separate groups: 2 populations file, Independent Samples tabs.",
-        "Three or more group means: One-Way ANOVA file. One group per column from A3; X3 is F and Y3 the p-value."
+        "Three or more groups: One-Way ANOVA file, tab ANOVA. One group per column from A3. Column I the group means, X3 F, Y3 the p-value."
       ] },
-
     { title:"Key terms",
       terms:[
-        ["Sample vs population SD","STDEV.S divides by n - 1 and is the one for a sample. STDEV.P is only for a whole population, which we almost never have."],
-        ["Paired data","Two measurements on the same subjects. The pairing is in the rows, and a summary table cannot recover it."],
-        ["ANOVA","One test of whether three or more group means are all equal. Ha: at least one differs."],
+        ["Sample vs population SD","STDEV.S divides by n - 1 and is the one for a sample. STDEV.P is only for a whole population. The Calculator tabs use STDEV.S."],
+        ["Paired data","Two measurements on the same subjects. The test runs on each subject's difference."],
+        ["ANOVA","One test of whether three or more group means are all equal. Hₐ: at least one differs."],
         ["Significant F","At least one group mean differs. It does not say which one, or which is best."],
         ["Fail to reject","The data could not show a difference. Not the same as showing there is none."]
       ] },
+
+    { title:"Data - Cider Waits (40 customers, minutes)",
+      table:{ columns:["Customer","Minutes"], rows:[["1", "3.5"], ["2", "4.9"], ["3", "2.3"], ["4", "5.5"], ["5", "6.2"], ["6", "4"], ["7", "5.2"], ["8", "5"], ["9", "4"], ["10", "3.4"], ["11", "1.8"], ["12", "6.6"], ["13", "4.5"], ["14", "8.1"], ["15", "5.8"], ["16", "5"], ["17", "3.7"], ["18", "6.5"], ["19", "3.9"], ["20", "6.8"], ["21", "4"], ["22", "4.9"], ["23", "2.5"], ["24", "7.9"], ["25", "4.5"], ["26", "4.1"], ["27", "5.7"], ["28", "3.4"], ["29", "5.7"], ["30", "3"], ["31", "5.4"], ["32", "3.1"], ["33", "2"], ["34", "3.8"], ["35", "2.6"], ["36", "5.4"], ["37", "4.6"], ["38", "5.3"], ["39", "4.7"], ["40", "4.1"]] } },
+    { title:"Data - Come Back Survey (150 visitors)",
+      table:{ columns:["Visitor","Come back next year?"], rows:[["1", "No"], ["2", "Yes"], ["3", "Yes"], ["4", "No"], ["5", "Yes"], ["6", "No"], ["7", "Yes"], ["8", "No"], ["9", "Yes"], ["10", "Yes"], ["11", "Yes"], ["12", "No"], ["13", "Yes"], ["14", "No"], ["15", "No"], ["16", "Yes"], ["17", "No"], ["18", "Yes"], ["19", "Yes"], ["20", "Yes"], ["21", "Yes"], ["22", "Yes"], ["23", "No"], ["24", "Yes"], ["25", "No"], ["26", "Yes"], ["27", "Yes"], ["28", "Yes"], ["29", "Yes"], ["30", "Yes"], ["31", "Yes"], ["32", "No"], ["33", "Yes"], ["34", "No"], ["35", "No"], ["36", "Yes"], ["37", "Yes"], ["38", "No"], ["39", "No"], ["40", "Yes"], ["41", "Yes"], ["42", "Yes"], ["43", "Yes"], ["44", "Yes"], ["45", "No"], ["46", "No"], ["47", "Yes"], ["48", "No"], ["49", "No"], ["50", "Yes"], ["51", "Yes"], ["52", "No"], ["53", "Yes"], ["54", "Yes"], ["55", "No"], ["56", "Yes"], ["57", "No"], ["58", "Yes"], ["59", "Yes"], ["60", "Yes"], ["61", "Yes"], ["62", "No"], ["63", "Yes"], ["64", "Yes"], ["65", "Yes"], ["66", "Yes"], ["67", "Yes"], ["68", "Yes"], ["69", "Yes"], ["70", "Yes"], ["71", "Yes"], ["72", "Yes"], ["73", "Yes"], ["74", "Yes"], ["75", "Yes"], ["76", "No"], ["77", "Yes"], ["78", "Yes"], ["79", "Yes"], ["80", "Yes"], ["81", "No"], ["82", "No"], ["83", "No"], ["84", "Yes"], ["85", "Yes"], ["86", "Yes"], ["87", "No"], ["88", "Yes"], ["89", "Yes"], ["90", "No"], ["91", "Yes"], ["92", "No"], ["93", "Yes"], ["94", "Yes"], ["95", "Yes"], ["96", "Yes"], ["97", "No"], ["98", "Yes"], ["99", "Yes"], ["100", "Yes"], ["101", "Yes"], ["102", "No"], ["103", "No"], ["104", "Yes"], ["105", "No"], ["106", "Yes"], ["107", "Yes"], ["108", "Yes"], ["109", "Yes"], ["110", "Yes"], ["111", "Yes"], ["112", "No"], ["113", "Yes"], ["114", "Yes"], ["115", "No"], ["116", "Yes"], ["117", "No"], ["118", "Yes"], ["119", "No"], ["120", "Yes"], ["121", "Yes"], ["122", "No"], ["123", "Yes"], ["124", "Yes"], ["125", "Yes"], ["126", "Yes"], ["127", "Yes"], ["128", "Yes"], ["129", "Yes"], ["130", "No"], ["131", "No"], ["132", "Yes"], ["133", "No"], ["134", "Yes"], ["135", "Yes"], ["136", "Yes"], ["137", "Yes"], ["138", "Yes"], ["139", "Yes"], ["140", "Yes"], ["141", "No"], ["142", "Yes"], ["143", "Yes"], ["144", "Yes"], ["145", "No"], ["146", "No"], ["147", "No"], ["148", "Yes"], ["149", "Yes"], ["150", "Yes"]] } },
+    { title:"Data - Heated Tent (sales, $100s)",
+      table:{ columns:["Vendor","Weekend 1 (outdoors)","Weekend 2 (heated tent)"], rows:[["Vendor 1", "18.6", "18.1"], ["Vendor 2", "17.3", "18.7"], ["Vendor 3", "21.2", "21.7"], ["Vendor 4", "18.5", "19.4"], ["Vendor 5", "15.3", "16.4"], ["Vendor 6", "19.8", "21.1"], ["Vendor 7", "24.5", "26.5"], ["Vendor 8", "22.7", "25.2"], ["Vendor 9", "14.5", "16"], ["Vendor 10", "11.7", "14.5"], ["Vendor 11", "14.9", "15.9"], ["Vendor 12", "18.2", "20.1"]] } },
+    { title:"Data - Pie Ratings (1 to 10)",
+      table:{ columns:["Taster","Apple","Pumpkin","Pecan"], rows:[["1", "7.5", "7.1", "6"], ["2", "6.7", "8.9", "7.9"], ["3", "5.9", "7.6", "9.1"], ["4", "5.1", "8.3", "7.1"], ["5", "4.5", "7.7", "6.9"], ["6", "6.4", "8.7", "7.5"], ["7", "5.6", "8.7", "6.9"], ["8", "5.5", "6.7", "7.4"], ["9", "6.2", "7", "6.2"], ["10", "6.3", "7.9", "7.7"], ["11", "4.1", "7.4", "7.7"], ["12", "7.3", "5.3", "4.9"], ["13", "4.4", "9.6", "7.2"], ["14", "8.3", "5.4", "7.5"], ["15", "7", "5.5", "7.9"]] } },
+    { title:"Data - Band Spend ($ per visitor)",
+      table:{ columns:["Visitor","Band 1","Band 2","Band 3","Band 4"], rows:[["1", "30.32", "20.92", "15.41", "25.65"], ["2", "34.66", "28.28", "14.62", "22.92"], ["3", "8.68", "22.52", "27.13", "30.59"], ["4", "23.17", "33.63", "19.83", "27.22"], ["5", "30.08", "33.75", "32.25", "21.83"], ["6", "32.11", "36.79", "27.37", "39.01"], ["7", "27.92", "25.84", "26.84", "24.82"], ["8", "32.98", "34.30", "26.25", "26.30"], ["9", "25.74", "20.56", "30.37", "29.36"], ["10", "27.31", "21.10", "24.08", "37.49"], ["11", "25.07", "26.49", "31.51", "26.11"], ["12", "17.56", "27.69", "21.84", "31.22"]] } },
   ],
 
   rounds:[
-    /* ---------------- ROUND 1 : Raw data ---------------- */
-    { reflection:{ prompt:"Which of these three decisions would have been easiest to get wrong without anyone noticing, and why?" },
+    /* ---------------- ROUND 1 : The cider stand and the survey ---------------- */
+    { reflection:{ prompt:"In one or two sentences: which slip in this round would have been easiest to make without noticing, and how would you catch it?" },
       turns:[
-
-        { kicker:"The Cider Line", contextTag:"Summaries from a raw column",
-          title:"Rosa's nephew summarized the cider wait times with STDEV.P.",
+        { kicker:"The Cider Line", contextTag:"RUN IT · Summaries from a raw column",
+          title:"Volunteers timed 40 customers at the cider stand. Rosa wants the mean and the spread.",
           body:[
-            "Volunteers timed 40 randomly chosen customers at the hot cider stand across the weekend. Rosa's nephew pasted the column into a sheet and used =STDEV.P “because we have all the data.” He got 1.4679 minutes.",
-            "The Calculator tab, with the same column pasted in, reports 1.4866."
+            "Open the Cider Waits tab of the data workbook. Paste the Minutes column into the Confidence Intervals file, tab Conf_Int_unknown_P_sd find mean, from A2. Read B2 and C2.",
+            "Rosa's nephew already did it his own way, with =AVERAGE and =STDEV.P “because we have all the data.” Which pair is right?"
           ],
           choices:[
-            { key:"A", text:"Keep 1.4679. All 40 times are right there in the sheet.",
-              consequence:"Having every value in the sheet is not the same as having the whole population. The population is every customer who waited, and only 40 were timed. STDEV.P understates the spread for a sample, a little here and enough to move a borderline p-value elsewhere.",
-              deltas:{validity:-12,decision:-6}, comps:[] },
-            { key:"B", text:"Use 1.4866, the sample standard deviation. Forty timed customers are a sample of everyone who waited all weekend.", best:true,
-              consequence:"Right. The 40 customers stand in for every cider customer the festival had, so the data are a sample and STDEV.S is the standard deviation for a sample. It is also what the Calculator tab uses, which is one less thing to get wrong.",
-              deltas:{validity:+14,trust:+5,decision:+10}, comps:["Procedure Selection","Excel Fluency"] },
-            { key:"C", text:"It does not matter. 1.47 and 1.49 are basically the same.",
-              consequence:"Close here, but the habit is the problem. The gap grows as samples get smaller, and the person reading your report cannot tell which function you used. Use the right one every time and the question never comes up.",
-              deltas:{validity:-4,decision:-2}, comps:[] },
-            { key:"D", text:"Skip the standard deviation and just report the average wait, 4.585 minutes.",
-              consequence:"The average alone cannot tell anyone whether 4.585 is a close call or a sure thing. Every procedure coming next needs the spread, so it has to be right.",
-              deltas:{validity:-6,trust:+2,decision:-4}, comps:[] },
+            { key:"A", text:"Mean 4.585 minutes, SD 1.4679 minutes.",
+              consequence:"That is the nephew's =STDEV.P. Forty timed customers are a sample of everyone who waited all weekend, so the standard deviation should be the sample one, STDEV.S, which divides by n − 1. The Calculator tab already uses it: C2 reads 1.4866.",
+              deltas:{validity:-10,decision:-6}, comps:[] },
+            { key:"B", text:"Mean 4.585 minutes, SD 1.4866 minutes.", best:true,
+              consequence:"Right. B2 is 4.585 and C2 is 1.4866, the sample standard deviation. Having every value in the sheet is not the same as having the population; the population is every customer who waited, and only 40 were timed.",
+              deltas:{validity:+12,trust:+4,decision:+8}, comps:["Excel Fluency","Procedure Selection"] },
+            { key:"C", text:"Mean 4.585 minutes, SD 0.2351 minutes.",
+              consequence:"0.2351 is the standard error, s ÷ √40. It measures how much the sample mean would bounce around, not how spread out the waits are. Individual waits run from 1.8 to 8.1 minutes, so a spread of a quarter-minute should look wrong.",
+              deltas:{validity:-8,decision:-4}, comps:[] },
+            { key:"D", text:"Mean 4.585 minutes, SD 2.2100 minutes.",
+              consequence:"2.2100 is the variance, s², in squared minutes. Take its square root and you are back to 1.4866.",
+              deltas:{validity:-8,decision:-4}, comps:[] },
           ]},
 
-        { kicker:"Under Five Minutes?", contextTag:"Reading the right box",
-          title:"Rosa wants a sign: “Average cider wait under 5 minutes!”",
+        { kicker:"How Long, Really?", contextTag:"RUN IT · Interval for a mean",
+          title:"Rosa asks how long the typical cider wait really is, for every customer, not just these 40.",
           body:[
-            "The 40 waits average 4.585 minutes with s = 1.4866. The Hypothesis Testing file, tab Pop_mean_unknow_pop_sd, row 3 reads: E3 t = -1.7655, F3 0.0427, G3 0.9573, H3 0.0853. Use α = 0.05."
+            "On the same tab, type n into D2 and 0.95 into E2. H2 and I2 are the limits of the 95% interval for the true mean wait."
           ],
           choices:[
-            { key:"A", text:"Read H3, the two-tail box. 0.0853 is above 0.05, so no sign.",
-              consequence:"H3 answers “is the mean different from 5,” which is not what the sign claims. The question has a direction, so the p-value has a direction too. Reading the two-tail box here throws away evidence and gets the wrong answer.",
-              deltas:{validity:-10,trust:-4,decision:-8}, comps:[] },
-            { key:"B", text:"No test needed. 4.585 is already less than 5.",
-              consequence:"That is true of these 40 customers. A different 40 might have averaged 5.2. The test asks whether 4.585 is far enough under 5 to say the same about every customer, and the answer is yes, but only just.",
-              deltas:{validity:-8,trust:+3,decision:-5}, comps:[] },
-            { key:"C", text:"Read G3. 0.9573 means the wait is almost certainly over 5 minutes.",
-              consequence:"G3 is the right-tail box, for a claim that the mean is greater than 5. Nobody claimed that. A p-value near 1 in the wrong tail is a sign you are reading the wrong box.",
-              deltas:{validity:-14,decision:-8}, comps:[] },
-            { key:"D", text:"The claim is “less than 5,” so it is left-tailed. Read F3: 0.0427 is below 0.05, so there is evidence the true mean wait is under 5 minutes. The sign can go up.", best:true,
-              consequence:"Exactly. Hₐ: μ < 5 points left, and F3 is the left-tail box. The p-value of 0.0427 is under 0.05, so the data support the sign. Notice how close it is: the box you read decides the answer.",
+            { key:"A", text:"(4.1890, 4.9810) minutes.",
+              consequence:"That is a 90% interval: 0.90 went into E2. The question asked for 95%, which is wider.",
+              deltas:{validity:-8,decision:-5}, comps:[] },
+            { key:"B", text:"(4.1243, 5.0457) minutes.",
+              consequence:"That interval used z* = 1.96, the known-σ tab. With s from the sample, the critical value comes from t on 39 df, which is why the right tab is Conf_Int_unknown_P_sd.",
+              deltas:{validity:-8,decision:-5}, comps:[] },
+            { key:"C", text:"(4.1096, 5.0604) minutes: 95% confident the true mean wait is between about 4.1 and 5.1 minutes.", best:true,
+              consequence:"Right. F2 t* = 2.0227, G2 margin of error 0.4754, limits 4.1096 and 5.0604. The interval is about the true MEAN wait, not about individual customers, some of whom waited eight minutes.",
+              deltas:{validity:+14,trust:+5,decision:+10}, comps:["Estimation & Intervals","Excel Fluency"] },
+            { key:"D", text:"(4.1155, 5.0545) minutes.",
+              consequence:"Close, but that interval was built from the STDEV.P value, 1.4679. Small slips at the start carry all the way through. With the sample SD the limits are 4.1096 and 5.0604.",
+              deltas:{validity:-6,decision:-4}, comps:[] },
+          ]},
+
+        { kicker:"Under Five Minutes?", contextTag:"RUN IT · Test for a mean",
+          title:"Rosa wants a sign at the stand: “Average cider wait under 5 minutes!”",
+          body:[
+            "Test it at α = 0.05. Hypothesis Testing file, tab Pop_mean_unknow_pop_sd, row 3: A3 x̄, B3 μ₀, C3 s, D3 n. Then decide which box answers Rosa's claim."
+          ],
+          choices:[
+            { key:"A", text:"t = −1.7655. The claim is “less than,” so read F3: p = 0.0427 < 0.05. There is evidence the true mean wait is under 5 minutes, and the sign can go up.", best:true,
+              consequence:"Exactly. Hₐ: μ < 5 is left-tailed, and F3 is the left-tail box. The sign is supported, but only just: the box you read decides the answer.",
               deltas:{validity:+16,trust:+6,decision:+12}, comps:["Hypothesis Testing","Statistical Communication"] },
+            { key:"B", text:"t = −1.7655. H3 = 0.0853 > 0.05, so no sign.",
+              consequence:"H3 is the two-tail box, for “different from 5.” Rosa's claim has a direction, so the p-value needs one too. Reading H3 throws away half the evidence and gets the wrong answer here.",
+              deltas:{validity:-10,trust:-4,decision:-8}, comps:[] },
+            { key:"C", text:"t = −1.7655. G3 = 0.9573, so the wait is almost certainly over 5 minutes.",
+              consequence:"G3 is the right tail, for a claim that the mean is greater than 5. Nobody claimed that. A p-value near 1 is often the sign you are reading the wrong box.",
+              deltas:{validity:-12,decision:-8}, comps:[] },
+            { key:"D", text:"No sign: the 95% interval from the last decision, (4.11, 5.06), still includes 5.",
+              consequence:"The 95% interval goes with the two-sided test, which also does not reject (H3 = 0.0853). Rosa's claim is one-sided, and the one-sided test is the one that answers it. Good instinct to check the interval, though; just match it to the right question.",
+              deltas:{validity:-4,trust:+2,decision:-3}, comps:["Estimation & Intervals"] },
           ]},
 
-        { kicker:"The Heated Tent", contextTag:"Paired or independent?",
-          title:"The same twelve vendors moved into the heated tent for weekend two. Did sales go up?",
+        { kicker:"Coming Back?", contextTag:"RUN IT · Proportion from a raw column",
+          title:"150 visitors answered “Will you come back next year?” Rosa wants to announce “At least 70% will be back!”",
           body:[
-            "Each vendor recorded sales, in hundreds of dollars, outdoors on weekend one and in the heated tent on weekend two. Eleven of the twelve sold more in the tent. The averages are 18.10 and 19.47.",
-            "Two tabs have been run on the same 24 numbers: Matched Sample HypTest gives p = 0.0002. Independent Samples Hyp Test gives p = 0.3744."
+            "Open the Come Back Survey tab. Count the Yes answers with =COUNTIF, find p̂, then build a 95% interval on the Confidence Intervals file, tab Conf_Int_Proportion. Check the conditions on the way."
           ],
           choices:[
-            { key:"A", text:"Use the Matched Sample result. The same vendor is measured twice, so the test belongs on each vendor's difference: p = 0.0002, strong evidence sales went up.", best:true,
-              consequence:"That is the pairing doing its job. Some vendors sell far more than others whatever the weather, and treating the weekends as separate groups lets that vendor-to-vendor spread drown the change. Each vendor's difference strips it out, and eleven of twelve going up is exactly what the paired test sees.",
-              deltas:{validity:+16,trust:+6,decision:+12}, comps:["Procedure Selection","Study Design"] },
-            { key:"B", text:"Use Independent Samples. Two weekends are two groups, and p = 0.3744 shows no evidence.",
-              consequence:"The weekends are not two separate groups of vendors; they are the same twelve vendors twice. The independent test treats the big differences between vendors as noise, and that noise hides a change nearly every vendor saw.",
-              deltas:{validity:-14,decision:-10}, comps:[] },
-            { key:"C", text:"Run both and report whichever one is significant.",
-              consequence:"Picking the test after seeing the results means the result picked the test. The design decides the procedure before anyone looks: same subjects twice is paired, every time. Here the right test happens to be significant, but that is not why it is right.",
-              deltas:{validity:-10,trust:+2,decision:-4}, comps:[] },
-            { key:"D", text:"Skip the test. 19.47 is bigger than 18.10, so the tent worked.",
-              consequence:"The direction is right, but the averages alone cannot say whether a $137 gap is real or luck. And the strongest evidence here, that eleven of twelve vendors went up, is invisible in two averages. It lives in the pairs.",
-              deltas:{validity:-6,trust:+3,decision:-3}, comps:[] },
+            { key:"A", text:"p̂ = 0.6933, below 0.70, so fewer than 70% of all visitors will come back.",
+              consequence:"p̂ describes these 150 visitors. For all visitors the interval runs from about 62% to 77%, so the true rate could be above 70% too. A sample proportion just under a target does not show the true rate is under it.",
+              deltas:{validity:-8,trust:-2,decision:-5}, comps:[] },
+            { key:"B", text:"p̂ = 0.6933 is close enough to 0.70, so the announcement is fine.",
+              consequence:"Close enough is not evidence. The interval runs from about 62% to 77%, so the true rate could easily be under 70%. The data cannot back “at least 70%.”",
+              deltas:{validity:-12,trust:+3,decision:-8}, comps:[] },
+            { key:"C", text:"COUNTIF gives 104, but the conditions fail, so no interval is possible.",
+              consequence:"104 Yes and 46 No are both well over 10, so the success-failure condition passes easily. The interval is available.",
+              deltas:{validity:-8,decision:-4}, comps:[] },
+            { key:"D", text:"104 Yes of 150, p̂ = 0.6933; conditions pass (104 and 46). 95% CI (0.6195, 0.7671). It includes values below 70%, so “at least 70%” is not established.", best:true,
+              consequence:"Right. The interval says the true come-back rate is plausibly anywhere from about 62% to 77%. Some of that is above 70% and some is below, so Rosa can honestly say “about seven in ten,” not “at least 70%.”",
+              deltas:{validity:+16,trust:+6,decision:+12}, comps:["Estimation & Intervals","Excel Fluency","Statistical Communication"] },
           ]},
       ]},
 
-    /* ---------------- ROUND 2 : ANOVA ---------------- */
-    { reflection:{ prompt:"Which of Rosa's ANOVA claims was most tempting to agree with, and what would you say to her instead?" },
+    /* ---------------- ROUND 2 : The heated tent ---------------- */
+    { reflection:{ prompt:"In one or two sentences: how did you know which tab to use for the heated tent, and what would have gone wrong with the other one?" },
       turns:[
-
-        { kicker:"The Pie Off", contextTag:"Procedure selection",
-          title:"Three pies, 45 tasters, one question: do the ratings differ?",
+        { kicker:"The Heated Tent", contextTag:"JUDGMENT · Choosing the procedure",
+          title:"The same twelve vendors sold outdoors on weekend one and in a new heated tent on weekend two. Did the tent help?",
           body:[
-            "Forty-five festival-goers were randomly handed a slice of apple, pumpkin or pecan, fifteen per pie, and rated it from 1 to 10. Rosa's nephew wants to run three two-sample t tests: apple vs pumpkin, apple vs pecan, pumpkin vs pecan."
+            "Each vendor recorded sales, in hundreds of dollars, both weekends. Before you run anything: which tab fits this design?"
           ],
           choices:[
-            { key:"A", text:"Three t tests, like the nephew said. Each one is a test we already know.",
-              consequence:"Each test is fine on its own. Together they inflate the chance that at least one comes back significant when the pies are really the same, and that is the exact problem ANOVA exists to avoid.",
+            { key:"A", text:"Independent Samples Hyp Test. Two weekends are two groups.",
+              consequence:"The weekends are not two separate groups of vendors; they are the same twelve vendors twice. Treating them as independent throws away the pairing, and with it the strongest evidence in the data.",
               deltas:{validity:-12,decision:-8}, comps:[] },
-            { key:"B", text:"Compare only the two pies with the highest averages, since that is where the winner is.",
-              consequence:"Choosing which pies to compare after seeing the averages lets the data pick the question. The test was supposed to come first. Start with all three.",
-              deltas:{validity:-10,decision:-5}, comps:[] },
-            { key:"C", text:"One ANOVA on the One-Way ANOVA file, one pie per column. Three groups, one question, one test.", best:true,
-              consequence:"Right. Every extra test is another chance of a false alarm, and three t tests pile those chances up. ANOVA asks whether the three mean ratings are all equal, once, at the α you chose. It comes back F = 6.00, p = 0.0051.",
-              deltas:{validity:+16,trust:+4,decision:+12}, comps:["Procedure Selection"] },
-            { key:"D", text:"Skip the ratings and ask the tasters which pie they liked best.",
-              consequence:"Each taster only ate one pie, so nobody can say which they liked best. The random assignment is what makes the ratings comparable. Use them.",
-              deltas:{validity:-8,trust:+2,decision:-6}, comps:[] },
+            { key:"B", text:"Matched Sample HypTest. Each vendor is measured twice, so the test belongs on each vendor's difference.", best:true,
+              consequence:"Right. Same subjects, two measurements, so the data are paired. The design picks the procedure before anyone looks at a p-value.",
+              deltas:{validity:+14,trust:+4,decision:+10}, comps:["Procedure Selection","Study Design"] },
+            { key:"C", text:"One-Way ANOVA, since there are 24 numbers.",
+              consequence:"ANOVA compares three or more separate groups. This is two measurements on the same twelve vendors.",
+              deltas:{validity:-10,decision:-6}, comps:[] },
+            { key:"D", text:"Run both and report whichever is significant.",
+              consequence:"Picking the test after seeing the results lets the result pick the test. The design decides first: same subjects twice is paired, every time.",
+              deltas:{validity:-10,trust:+2,decision:-4}, comps:[] },
           ]},
 
-        { kicker:"Pumpkin Wins?", contextTag:"What a significant F says",
-          title:"F = 6.00, p = 0.0051. Rosa: “Pumpkin wins, put it on the banner!”",
+        { kicker:"Run the Tent", contextTag:"RUN IT · Paired test",
+          title:"Run it. Did sales go up in the heated tent?",
           body:[
-            "The mean ratings are apple 6.05, pumpkin 7.45 and pecan 7.19. Before Rosa came over you also ran pumpkin against pecan on their own: p = 0.5445."
+            "Open the Heated Tent tab. On the 2 populations file, tab Matched Sample HypTest, paste Weekend 2 into column B and Weekend 1 into column C from row 2, so D is tent minus outdoors. Fill D down, type n into G2, leave H2 at 0. Test at α = 0.05, two-sided."
+          ],
+          choices:[
+            { key:"A", text:"E2 mean difference 1.3667, I2 t = 5.3214, M2 p = 0.0002. Reject H₀: average sales per vendor were higher in the tent.", best:true,
+              consequence:"Right. The average vendor sold about $137 more in the tent, and eleven of twelve went up. The paired test strips out the big differences between vendors and sees the change clearly.",
+              deltas:{validity:+16,trust:+6,decision:+12}, comps:["Hypothesis Testing","Excel Fluency"] },
+            { key:"B", text:"E2 −1.3667, I2 t = −5.3214, M2 p = 0.0002. Reject H₀: sales went down in the tent.",
+              consequence:"Same p-value, opposite story. That happens when the columns go in the other way round, so D becomes outdoors minus tent. The difference is negative because of the subtraction order, not because sales fell. Check which column you put first.",
+              deltas:{validity:-10,decision:-8}, comps:[] },
+            { key:"C", text:"t = 0.9075, p = 0.3744. Fail to reject: no evidence the tent helped.",
+              consequence:"That is the Independent Samples result on the same 24 numbers. It treats the vendor-to-vendor spread as noise, and that noise hides a change almost every vendor saw.",
+              deltas:{validity:-12,decision:-8}, comps:[] },
+            { key:"D", text:"E2 mean difference 1.3667, M2 p = 0.0002, so the tent caused every vendor to sell exactly $137 more.",
+              consequence:"The p-value is right; the sentence is not. $137 is the AVERAGE change, and one vendor actually sold less. And it was not a randomized study, so the weekend itself (weather, crowds) changed along with the tent.",
+              deltas:{validity:-6,trust:+3,decision:-4}, comps:["Causal Reasoning"] },
+          ]},
+
+        { kicker:"How Much More?", contextTag:"RUN IT · Paired interval",
+          title:"Rosa wants a number for the vendors' newsletter: how much more does the tent bring in?",
+          body:[
+            "Same two columns on the Matched Sample Conf Int tab. Fill D down, n in G2, 0.95 in H2. M2 and N2 are the limits, in hundreds of dollars."
+          ],
+          choices:[
+            { key:"A", text:"(−1.7651, 4.4984): the tent might have lowered sales.",
+              consequence:"That is the interval from treating the weekends as independent groups. It is wide because the vendor-to-vendor spread got counted as noise. The data are paired, so use the paired interval.",
+              deltas:{validity:-10,decision:-6}, comps:[] },
+            { key:"B", text:"(0.9054, 1.8279): between about $91 and $183 more per vendor-weekend.",
+              consequence:"That is a 90% interval: 0.90 went into H2. For 95% the limits are a little wider: 0.8014 to 1.9319.",
+              deltas:{validity:-6,decision:-4}, comps:[] },
+            { key:"C", text:"(0.8014, 1.9319): between about $801 and $1,932 more per vendor-weekend.",
+              consequence:"Right limits, wrong units. The sales are in hundreds of dollars, so 0.8014 is $80, not $801. A newsletter that promises ten times too much is a very awkward correction.",
+              deltas:{validity:-6,trust:-4,decision:-6}, comps:[] },
+            { key:"D", text:"(0.8014, 1.9319): 95% confident the tent adds between about $80 and $193 per vendor per weekend, on average.", best:true,
+              consequence:"Right, and note the units: the data are in hundreds of dollars, so 0.80 to 1.93 is $80 to $193. The interval sits entirely above zero, which agrees with the test rejecting.",
+              deltas:{validity:+15,trust:+6,decision:+11}, comps:["Estimation & Intervals","Statistical Communication"] },
+          ]},
+
+        { kicker:"Old Friends, New Faces", contextTag:"JUDGMENT · Two separate groups",
+          title:"Rosa: “Returning vendors outsold the new ones. Next year, returning vendors only!”",
+          body:[
+            "Fourteen returning vendors averaged 18.6 ($100s) with s = 5.0; ten new vendors averaged 15.2 with s = 4.1. These are different vendors, so the Independent Samples Hyp Test was run: D3 t = 1.8261, F3 df = 21, I3 two-tail p = 0.0821. α = 0.05."
+          ],
+          choices:[
+            { key:"A", text:"Agree. 18.6 is clearly more than 15.2.",
+              consequence:"For these 24 vendors, yes. The test asks whether the gap is big enough to say the same about returning and new vendors in general, and at p = 0.0821 it is not.",
+              deltas:{validity:-10,trust:+3,decision:-8}, comps:[] },
+            { key:"B", text:"Use the Matched Sample tab instead; it would give a smaller p-value.",
+              consequence:"Matched Sample needs the same subjects twice. These are 24 different vendors, so there is nothing to pair, and wanting a smaller p-value is not a reason to switch tests.",
+              deltas:{validity:-12,decision:-6}, comps:[] },
+            { key:"C", text:"Fail to reject: p = 0.0821 > 0.05, so the data cannot show returning vendors sell more on average. Not enough to drop new vendors on this evidence.", best:true,
+              consequence:"Right. The gap might be real, but this data cannot separate it from chance. Saying so plainly, and saying what would settle it (more vendors, more weekends), is more useful to Rosa than a yes she cannot defend.",
+              deltas:{validity:+15,trust:+6,decision:+12}, comps:["Interpreting Uncertainty","Decision Support"] },
+            { key:"D", text:"0.0821 is under 0.10, so call it significant.",
+              consequence:"α was 0.05, chosen before the data came in. Moving it afterward to get the answer someone wants makes the test meaningless.",
+              deltas:{validity:-14,decision:-8}, comps:[] },
+          ]},
+      ]},
+
+    /* ---------------- ROUND 3 : The Pie Off and the bands ---------------- */
+    { reflection:{ prompt:"In one or two sentences: what would you tell Rosa about what ANOVA can and cannot tell her?" },
+      turns:[
+        { kicker:"The Pie Off", contextTag:"JUDGMENT · Choosing the procedure",
+          title:"Three pies, 45 tasters, one question: do the ratings differ?",
+          body:[
+            "Forty-five festival-goers were randomly handed a slice of apple, pumpkin or pecan, fifteen per pie, and rated it from 1 to 10. Rosa's nephew wants to run three two-sample t tests."
+          ],
+          choices:[
+            { key:"A", text:"Three t tests: apple vs pumpkin, apple vs pecan, pumpkin vs pecan.",
+              consequence:"Each one is fine on its own, but together they pile up the chances of a false alarm. That is exactly the problem ANOVA exists to avoid.",
+              deltas:{validity:-12,decision:-8}, comps:[] },
+            { key:"B", text:"Compare only the two pies with the highest averages.",
+              consequence:"Choosing which pies to compare after seeing the averages lets the data pick the question. Start with all three.",
+              deltas:{validity:-10,decision:-5}, comps:[] },
+            { key:"C", text:"Ask the tasters which pie they liked best.",
+              consequence:"Each taster only ate one pie, so nobody can say which they liked best. The random assignment is what makes the ratings comparable.",
+              deltas:{validity:-8,trust:+2,decision:-6}, comps:[] },
+            { key:"D", text:"One ANOVA on the One-Way ANOVA file, one pie per column.", best:true,
+              consequence:"Right. Three groups, one question, one test, at the α you chose.",
+              deltas:{validity:+14,trust:+4,decision:+10}, comps:["Procedure Selection"] },
+          ]},
+
+        { kicker:"Run the Pies", contextTag:"RUN IT · One-way ANOVA",
+          title:"Run it. Do the three pies have the same mean rating?",
+          body:[
+            "Open the Pie Ratings tab. Paste the three columns into the One-Way ANOVA file, tab ANOVA, at A3, B3 and C3, ratings only. Check N3 and O3, then read column I, X3 and Y3. α = 0.05."
+          ],
+          choices:[
+            { key:"A", text:"Means 6.05, 7.45, 7.19; X3 F = 6.0002, Y3 p = 0.0051. Reject H₀: at least one pie's mean rating differs.", best:true,
+              consequence:"Right. N3 should read 3 groups and O3 45 tasters. The p-value is well under 0.05, so the three pies are not all rated the same.",
+              deltas:{validity:+16,trust:+5,decision:+12}, comps:["Hypothesis Testing","Excel Fluency"] },
+            { key:"B", text:"F = 9.1478, p = 0.0053.",
+              consequence:"That is what you get with only two columns pasted, apple and pumpkin; N3 would read 2 groups. Paste all three pies, and check N3 every time.",
+              deltas:{validity:-8,decision:-5}, comps:[] },
+            { key:"C", text:"F = 6.0002, so the p-value is 6%, above 0.05. Fail to reject.",
+              consequence:"F is the test statistic, not a percentage. The p-value is in Y3: 0.0051.",
+              deltas:{validity:-12,decision:-8}, comps:[] },
+            { key:"D", text:"N3 reads 1 group and the F cells show an error.",
+              consequence:"That happens when the data go in as one long column, or with the header row and labels. The Pie Ratings tab is already one column per pie: paste the three rating columns, numbers only, from A3.",
+              deltas:{validity:-6,decision:-4}, comps:[] },
+          ]},
+
+        { kicker:"Pumpkin Wins?", contextTag:"JUDGMENT · What a significant F says",
+          title:"Rosa: “Pumpkin has the highest rating and the test was significant. Pumpkin wins, put it on the banner!”",
+          body:[
+            "You also ran pumpkin against pecan on their own, on the Independent Samples Hyp Test: I3 two-tail p = 0.5445."
           ],
           choices:[
             { key:"A", text:"Agree. Pumpkin has the highest mean and the test was significant.",
-              consequence:"The test was significant about something it was never asked. ANOVA compares all three at once, and its significance comes mostly from apple, not from pumpkin beating pecan. Pumpkin's 0.26-point edge is well inside what chance produces.",
+              consequence:"The test was significant about something it was never asked. ANOVA compares all three at once, and its significance comes mostly from apple sitting lower. Pumpkin's 0.26-point edge over pecan is well inside what chance produces.",
               deltas:{validity:-16,trust:+4,decision:-12}, comps:[] },
-            { key:"B", text:"Tell her the test says at least one pie's mean rating differs, but it names no winner. Pumpkin against pecan alone is p = 0.5445, so the data cannot separate them.", best:true,
-              consequence:"That is the whole idea. A significant F says the three pies are not all rated the same, and apple sitting more than a point lower is what drives it. It does not crown pumpkin. Pumpkin and pecan are too close for this data to tell apart.",
+            { key:"B", text:"A significant F says at least one pie differs, but names no winner. Pumpkin vs pecan alone is p = 0.5445, so the data cannot separate them.", best:true,
+              consequence:"That is the whole idea. Apple sitting more than a point lower drives the F. The banner can honestly say pumpkin and pecan were the crowd favorites; it cannot crown one. Naming a winner would take a follow-up test, such as Tukey's, which is beyond this course.",
               deltas:{validity:+18,trust:+7,decision:+13}, comps:["Interpreting Uncertainty","Statistical Communication"] },
-            { key:"C", text:"Tell her the test proves all three pies are rated differently.",
-              consequence:"Hₐ is “at least one differs,” not “all differ.” Pumpkin and pecan may well be the same, and nothing in a significant F says otherwise.",
+            { key:"C", text:"The test proves all three pies are rated differently.",
+              consequence:"Hₐ is “at least one differs,” not “all differ.” Pumpkin and pecan may well be the same.",
               deltas:{validity:-12,decision:-8}, comps:[] },
-            { key:"D", text:"Say a follow-up test, such as Tukey's, would be needed to name a winner, and hold the banner until then.",
-              consequence:"The right instinct: naming which pies differ takes a follow-up procedure, and Tukey's is the name worth knowing. It is beyond this course, and with pumpkin and pecan at p = 0.5445 it would almost certainly not separate them either. Telling Rosa that directly is more useful today.",
-              deltas:{validity:+10,trust:+3,decision:+6}, comps:["Procedure Selection"] },
+            { key:"D", text:"Since the F was significant, every pair of pies must differ, including pumpkin and pecan.",
+              consequence:"A significant F does not mean every pair differs. Here, pumpkin and pecan on their own are nowhere near significant.",
+              deltas:{validity:-12,decision:-8}, comps:[] },
           ]},
 
-        { kicker:"Battle of the Bands", contextTag:"A non-significant result",
-          title:"Four bands, ANOVA p = 0.4669. Rosa: “So music makes no difference. Cancel the bands next year.”",
+        { kicker:"Battle of the Bands", contextTag:"RUN IT · A non-significant result",
+          title:"Four bands played the main stage. Rosa: “If the bands don't change spending, cancel the music next year.”",
           body:[
-            "Volunteers recorded spend per visitor during each band's set, twelve visitors per band. The means are $26.30, $27.66, $24.79 and $28.54. The One-Way ANOVA file returns F = 0.86 and p = 0.4669."
+            "Open the Band Spend tab: spend per visitor during each band's set, twelve visitors per band. Run it on the One-Way ANOVA file, one band per column from A3. α = 0.05."
           ],
           choices:[
-            { key:"A", text:"Agree. p = 0.4669 shows the bands are all the same.",
+            { key:"A", text:"F = 0.8641, p = 0.4669. The bands are all the same, so cancel the music.",
               consequence:"Failing to reject is not accepting. Twelve visitors per band can miss a real difference of several dollars. And “the bands are the same as each other” is still not “music makes no difference.”",
               deltas:{validity:-16,trust:+3,decision:-12}, comps:[] },
-            { key:"B", text:"Book only the band with the highest average, $28.54.",
+            { key:"B", text:"F = 0.8641, p = 0.4669. Book only Band 4, which had the highest mean, $28.54.",
               consequence:"The test just said the data cannot separate the four bands. Picking the top average anyway treats noise as a result, the same mistake as crowning pumpkin.",
               deltas:{validity:-12,decision:-8}, comps:[] },
-            { key:"C", text:"Raise α to 0.50 so the result is significant.",
-              consequence:"α is chosen before the data come in so it cannot be moved afterward to get the answer someone wants. Moving it now makes the test meaningless.",
-              deltas:{validity:-18,decision:-10}, comps:[] },
-            { key:"D", text:"Fail to reject: the data cannot show the four bands differ in average spend. That is not proof they are the same, and this study never compared bands against no band at all.", best:true,
-              consequence:"Two catches in one answer. A large p-value means the data could not tell the bands apart, which is a statement about the evidence, not proof they are identical. And every visitor here heard some band, so nothing in this data says what happens with none. Cancelling the music answers a question nobody tested.",
+            { key:"C", text:"F = 0.8641, p = 0.4669: fail to reject. The data cannot show the bands differ in average spend. That is not proof they are the same, and nothing here compares music to no music.", best:true,
+              consequence:"Two catches in one answer. A large p-value means the data could not tell the bands apart, which is about the evidence, not proof they are identical. And every visitor heard some band, so cancelling the music answers a question nobody tested.",
               deltas:{validity:+18,trust:+8,decision:+14}, comps:["Interpreting Uncertainty","Causal Reasoning"] },
+            { key:"D", text:"F = 0.8641 is less than 1, so the bands lowered spending.",
+              consequence:"F compares the spread between the band means to the spread within them. It is never negative and says nothing about raising or lowering spending.",
+              deltas:{validity:-12,decision:-8}, comps:[] },
           ]},
       ]},
   ],
 
   endings:[
-    { test:(m)=> m.validity>=75 && m.trust>=66 && m.decision>=70,
+    { test:(m)=> m.validity>=80 && m.trust>=66 && m.decision>=75,
       title:"Blue Ribbon Analysis",
-      text:"Monday's meeting went smoothly. The cider sign is true, the heated tent is coming back, the pie banner says something the tasters actually showed, and the bands are staying. Every call came down to choosing which number answers the question, and you chose well. Enjoy the break." },
-    { test:(m)=> m.validity>=60 && m.decision>=55,
+      text:"Monday's meeting went smoothly. The cider sign is true, the survey line says “about seven in ten,” the heated tent is coming back with an honest number, new vendors are still invited, the pie banner says something the tasters actually showed, and the bands are staying. You ran the numbers yourself and read the right cell every time. Enjoy the break." },
+    { test:(m)=> m.validity>=62 && m.decision>=58,
       title:"Second Place, Still Delicious",
-      text:"Most of the plan holds up. A call or two let Rosa's good news get ahead of the data. Look back at the decision that cost you the most: was it the box you read, the tab you picked, or what you let a p-value say? That is the one to practice before the final." },
+      text:"Most of the plan holds up. A call or two let a slip or Rosa's good news get ahead of the data. Look back at the decision that cost you the most: was it the cell you read, the tab you picked, or what you let a p-value say? That is the one to practice before the final." },
     { test:()=> true,
       title:"Back to the Kitchen",
-      text:"A few calls let the wanted answer choose the number. That is what practice is for. Read the consequences again for the decisions that dropped Statistical Validity. Most come down to three habits: the right standard deviation, the right box, and remembering what ANOVA does and does not say." },
+      text:"A few calls let a slip or the wanted answer choose the number. That is what practice is for. Re-run the decisions that dropped Statistical Validity on the Calculator Files and compare: most come down to the right standard deviation, the right box, the right tab for the design, and remembering what ANOVA does and does not say." },
   ],
 };
 
@@ -1238,12 +1337,13 @@ const SCENARIOS = {
         topics:["ANOVA","What a significant F names","Practical significance","Causation"],
         blurb:"A studio nine days from launch, three tutorial designs, and a founder who reads every result as a green light. Built to run after ANOVA and before regression.",
         sim: MAT240_SHIP },
-      { id:"mat240-pie", name:"The Great Pie Off", est:"~20 min",
-        topics:["Inference from raw data","Paired vs independent","ANOVA","What F does and does not say"],
-        blurb:"A harvest festival, a committee chair who loves a banner, and six calls about cider lines, a heated tent, three pies and four bands. Practice on everything since Exam 2.",
+    ],
+    hour: [
+      { id:"mat240-pie", name:"The Great Pie Off", est:"~45 min",
+        topics:["Inference from raw data","Paired vs independent","One-way ANOVA","Calculator Files"],
+        blurb:"A harvest festival, a committee chair who loves a banner, and twelve calls about cider lines, a come-back survey, a heated tent, three pies and four bands. You run most of it yourself on the Calculator Files. Practice on everything since Exam 2.",
         sim: MAT240_PIE },
     ],
-    hour: [],
     course: [],
   },
 };
